@@ -7,3 +7,7 @@
 *.rej
 *.swp
 .DS_Store
+
+build/
+dist/
+hyou.egg-info/
