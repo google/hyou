@@ -1,21 +1,45 @@
 Hyou - Pythonic Interface to manipulate Google Spreadsheet
 ==========================================================
 
-Hyou provides a simple Pythonic interfaces to manipulate your
-Google Spreadsheet data from Python code.
+Hyou provides a simple Pythonic interface to manipulate your
+Google Spreadsheet data.
 
 
-Usage
------
+Synopsis
+--------
 
-TODO(nya): Write documents.
+```python
+import hyou
+collection = hyou.login('/path/to/credentails.json')
+spreadsheet = collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
+worksheet = spreadsheet['Sheet1']
+print worksheet[1][0]  # "banana"
+print worksheet[1][1]  # "50"
+worksheet[2][0] = "cinamon"
+worksheet[2][1] = 40
+worksheet.commit()
+```
+
+Reference
+---------
+
+TODO(nya): Write documentation.
+
+
+Author
+------
+
+Shuhei Takahashi
+
+- [https://nya3.jp/](https://nya3.jp/)
+- [@nya3jp](https://twitter.com/nya3jp/)
 
 
 Disclaimer
 ----------
 
-This library is authored by a Googler (Shuhei Takahashi), but
-not an official Google product.
+This library is authored by a Googler and copyrighted by Google, but
+is not an official Google product.
 
 
 License
