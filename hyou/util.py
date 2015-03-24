@@ -96,3 +96,45 @@ class LazyOrderedDictionary(object):
           self._cache_list.append((None, None))
         self._cache_list[index] = (key, value)
       self._enumerated = True
+
+
+class CustomImmutableList(object):
+  """Provides methods to mimic a immutable Python list.
+
+  Subclasses need to provide implementation of at least following methods:
+  - __getitem__
+  - __iter__
+  - __len__
+  """
+
+  def __contains__(self, find_value):
+    for i, value in enumerate(self):
+      if value == find_value:
+        return True
+    return False
+
+  def index(self, find_value):
+    for i, value in enumerate(self):
+      if value == find_value:
+        return i
+    raise ValueError('%r is not in list' % find_value)
+
+  def count(self, find_value):
+    result = 0
+    for value in self:
+      if value == find_value:
+        result += 1
+    return result
+
+
+class CustomMutableFixedList(CustomImmutableList):
+  """Provides methods to mimic a mutable Python list.
+
+  Subclasses need to provide implementation of at least following methods,
+  in addition to those required by CustomImmutableList:
+  - __setitem__
+  """
+
+  def sort(self, cmp=None, key=None, reverse=False):
+    for i, new_value in sorted(self, cmp=cmp, key=key, reverse=reverse):
+      self[i] = new_value

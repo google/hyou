@@ -106,7 +106,9 @@ class WorksheetView(object):
     self.end_row = end_row
     self.start_col = start_col
     self.end_col = end_col
-    self._view_rows = [WorksheetViewRow(self, row) for row in xrange(start_row, end_row)]
+    self._view_rows = [
+        WorksheetViewRow(self, row, start_col, end_col)
+        for row in xrange(start_row, end_row)]
     self._input_value_map = {}
     self._cells_fetched = False
     self._queued_updates = []
@@ -146,6 +148,10 @@ class WorksheetView(object):
   def __len__(self):
     return self.rows
 
+  def __iter__(self):
+    for row in self._view_rows:
+      yield row
+
   def __repr__(self):
     return '<%s %r>' % (self.__class__.__name__, self._view_rows,)
 
@@ -164,22 +170,34 @@ class WorksheetView(object):
     return self.end_col - self.start_col
 
 
-class WorksheetViewRow(object):
-  def __init__(self, view, row):
+class WorksheetViewRow(util.CustomMutableFixedList):
+  def __init__(self, view, row, start_col, end_col):
     self._view = view
     self._row = row
+    self._start_col = start_col
+    self._end_col = end_col
 
   def __getitem__(self, index):
-    col = self._view.start_col + index
-    if not (self._view.start_col <= col < self._view.end_col):
+    if isinstance(index, slice):
+      start, stop, step = index.indices(len(self))
+      assert step == 1, 'slicing with step is not supported'
+      if stop < start:
+        stop = start
+      return WorksheetViewRow(
+          self._view, self._row,
+          self._start_col + start, self._end_col + stop)
+    assert isinstance(index, int)
+    col = self._start_col + index
+    if not (self._start_col <= col < self._end_col):
       raise KeyError()
     if (self._row, col) not in self._view._input_value_map:
       self._view._ensure_cells_fetched()
     return self._view._input_value_map.get((self._row, col))
 
   def __setitem__(self, index, new_value):
-    col = self._view.start_col + index
-    if not (self._view.start_col <= col < self._view.end_col):
+    assert isinstance(index, int)
+    col = self._start_col + index
+    if not (self._start_col <= col < self._end_col):
       raise KeyError()
     if new_value is None:
       pass
@@ -196,10 +214,15 @@ class WorksheetViewRow(object):
     self._view._queued_updates.append((self._row, col, new_value))
 
   def __len__(self):
-    return self._view.cols
+    return self._end_col - self._start_col
+
+  def __iter__(self):
+    self._view._ensure_cells_fetched()
+    for col in xrange(self._start_col, self._end_col):
+      yield self._view._input_value_map.get((self._row, col))
 
   def __repr__(self):
-    return repr([self[i] for i in xrange(self._view.cols)])
+    return repr([self[i] for i in xrange(len(self))])
 
 
 class Worksheet(WorksheetView):
@@ -214,12 +237,23 @@ class Worksheet(WorksheetView):
     self._entry = self.client.get_worksheet(self.spreadsheet.key, self.key)
     super(Worksheet, self).refresh()
 
-  def view(self, start_row, end_row, start_col, end_col):
-    if not (0 <= start_row <= end_row < self.rows):
+  def view(self, start_row=None, end_row=None, start_col=None, end_col=None):
+    if start_row is None:
+      start_row = 0
+    if end_row is None:
+      end_row = self.rows
+    if start_col is None:
+      start_col = 0
+    if end_col is None:
+      end_col = self.cols
+    if not (0 <= start_row <= end_row <= self.rows):
       raise KeyError()
-    if not (0 <= start_col <= end_col < self.cols):
+    if not (0 <= start_col <= end_col <= self.cols):
       raise KeyError()
-    return View(self, self.client, start_row, end_row, start_col, end_col)
+    return WorksheetView(
+        self, self.client,
+        start_row=start_row, end_row=end_row,
+        start_col=start_col, end_col=end_col)
 
   @property
   def name(self):
