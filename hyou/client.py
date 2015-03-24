@@ -94,7 +94,8 @@ class Spreadsheet(util.LazyOrderedDictionary):
     feed = self.client.get_worksheets(self.key)
     for entry in feed.entry:
       key = entry.get_worksheet_id()
-      yield (key, Worksheet(self, self.client, key, entry))
+      worksheet = Worksheet(self, self.client, key, entry)
+      yield (worksheet.name, worksheet)
 
 
 class WorksheetView(object):
