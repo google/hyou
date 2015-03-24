@@ -15,11 +15,9 @@
 import os
 from setuptools import setup, Extension
 
-import hyou
-
 setup(
     name='hyou',
-    version=hyou.__version__,
+    version='1.0',
     author='Shuhei Takahashi',
     author_email='nya@google.com',
     description='Pythonic Interface to manipulate Google Spreadsheet',
