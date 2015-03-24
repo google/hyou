@@ -16,4 +16,5 @@ __version__ = '1.0'
 
 from .client import Collection
 
-open_with_json = Collection.open_with_json
+login = Collection.login
+login_as_service_account = Collection.login_as_service_account
