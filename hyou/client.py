@@ -24,6 +24,12 @@ import oauth2client.client
 from . import util
 
 
+GOOGLE_SPREADSHEET_SCOPES = (
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive',
+)
+
+
 class Collection(util.LazyOrderedDictionary):
   def __init__(self, credentials):
     super(Collection, self).__init__(

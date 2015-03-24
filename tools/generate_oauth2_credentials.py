@@ -24,6 +24,7 @@ import os
 import sys
 
 import gflags
+import hyou.client
 import oauth2client.client
 
 FLAGS = gflags.FLAGS
@@ -36,17 +37,11 @@ gflags.MarkFlagAsRequired('client_secret')
 gflags.MarkFlagAsRequired('credentials_json')
 
 
-GOOGLE_SPREADSHEET_SCOPES = (
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/drive',
-)
-
-
 def main(unused_argv):
   flow = oauth2client.client.OAuth2WebServerFlow(
       client_id=FLAGS.client_id,
       client_secret=FLAGS.client_secret,
-      scope=GOOGLE_SPREADSHEET_SCOPES)
+      scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
   url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
   print 'Please visit this URL to get the authorization code:'
   print url
