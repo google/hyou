@@ -31,8 +31,8 @@ Author
 
 Shuhei Takahashi
 
-- [https://nya3.jp/](https://nya3.jp/)
-- [@nya3jp](https://twitter.com/nya3jp/)
+- Website: https://nya3.jp/
+- Twitter: https://twitter.com/nya3jp/
 
 
 Disclaimer

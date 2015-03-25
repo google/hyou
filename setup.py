@@ -15,16 +15,29 @@
 import os
 from setuptools import setup, Extension
 
+def read_file(name):
+  with open(os.path.join(os.path.dirname(__file__), name)) as f:
+    return f.read().strip()
+
 setup(
     name='hyou',
     version='1.0',
     author='Shuhei Takahashi',
     author_email='nya@google.com',
     description='Pythonic Interface to manipulate Google Spreadsheet',
+    long_description=read_file('README.txt'),
+    url='https://github.com/google/hyou/',
     packages=['hyou'],
     install_requires=[
         'gdata',
         'oauth2client',
         'python-gflags',
+    ],
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'License :: OSI Approved :: Apache Software License',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
