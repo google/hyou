@@ -15,4 +15,3 @@
 from .client import Collection
 
 login = Collection.login
-login_as_service_account = Collection.login_as_service_account

@@ -42,34 +42,20 @@ class Collection(util.LazyOrderedDictionary):
     self.auth_token.authorize(self.client)
 
   @classmethod
-  def login(cls, json_path=None, json_data=None):
-    if (json_path is None) == (json_data is None):
-      raise TypeError('login() requires either json_path or json_data')
-    if json_data is None:
+  def login(cls, json_path=None, json_text=None):
+    if json_text is None:
       with open(json_path, 'rb') as f:
-        json_data = f.read()
-    credentials = oauth2client.client.OAuth2Credentials.from_json(json_data)
-    return cls(credentials)
-
-  @classmethod
-  def login_as_service_account(
-      cls,
-      service_account_name,
-      private_key_path=None,
-      private_key_data=None,
-      private_key_password='notasecret'):
-    if (private_key_path is None) == (private_key_data is None):
-      raise TypeError(
-          'login_as_service_account() requires either private_key_path or '
-          'private_key_data')
-    if private_key_data is None:
-      with open(private_key_path, 'rb') as f:
-        private_key_data = f.read()
-    credentials = oauth2client.client.SignedJwtAssertionCredentials(
-        service_account_name=service_account_name,
-        private_key=private_key_data,
-        private_key_password=private_key_password,
-        scope=GOOGLE_SPREADSHEET_SCOPES)
+        json_text = f.read()
+    json_data = json.loads(json_text)
+    if '_module' in json_data:
+      credentials = auth2client.client.Credentials.new_from_json(json_data)
+    elif 'private_key' in json_data:
+      credentials = oauth2client.client.SignedJwtAssertionCredentials(
+          service_account_name=json_data['client_email'],
+          private_key=json_data['private_key'],
+          scope=GOOGLE_SPREADSHEET_SCOPES)
+    else:
+      raise ValueError('unrecognized credential format')
     return cls(credentials)
 
   def refresh(self):
