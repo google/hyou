@@ -78,6 +78,12 @@ class LazyOrderedDictionary(object):
       raise KeyError(key)
     return self._cache_list[index][1]
 
+  def get(self, key, default=None):
+    try:
+      return self[key]
+    except KeyError:
+      return default
+
   def _ensure_enumerated(self):
     if not self._enumerated:
       # Save partially constructed entries.
