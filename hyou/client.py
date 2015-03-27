@@ -145,15 +145,21 @@ class WorksheetView(object):
         min_col=(self.start_col + 1),
         max_col=self.end_col,
         return_empty=False)
-    feed = self.client.get_cells(self.worksheet.spreadsheet.key, self.worksheet.key, query=query)
+    feed = self.client.get_cells(
+        self.worksheet.spreadsheet.key, self.worksheet.key, query=query)
     self._input_value_map = {}
     for entry in feed.entry:
       cell = entry.cell
-      self._input_value_map.setdefault((int(cell.row) - 1, int(cell.col) - 1), cell.input_value)
+      self._input_value_map.setdefault(
+          (int(cell.row) - 1, int(cell.col) - 1),
+          cell.input_value)
     self._cells_fetched = True
 
   def commit(self):
-    feed = gdata.spreadsheets.data.build_batch_cells_update(self.worksheet.spreadsheet.key, self.worksheet.key)
+    if not self._queued_updates:
+      return
+    feed = gdata.spreadsheets.data.build_batch_cells_update(
+        self.worksheet.spreadsheet.key, self.worksheet.key)
     for row, col, new_value in self._queued_updates:
       feed.add_set_cell(row + 1, col + 1, new_value)
     self.client.batch(feed, force=True)
