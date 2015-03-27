@@ -93,6 +93,11 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self.key,
         desired_class=gdata.spreadsheets.data.Spreadsheet)
 
+  def add_worksheet(self, name, rows=100, cols=26):
+    self.client.add_worksheet(self.key, name, rows=rows, cols=cols)
+    self.refresh()
+    return self[name]
+
   @property
   def title(self):
     return self._entry.title.text
