@@ -119,13 +119,7 @@ class WorksheetView(object):
   def __init__(self, worksheet, client, start_row, end_row, start_col, end_col):
     self.worksheet = worksheet
     self.client = client
-    self.start_row = start_row
-    self.end_row = end_row
-    self.start_col = start_col
-    self.end_col = end_col
-    self._view_rows = [
-        WorksheetViewRow(self, row, start_col, end_col)
-        for row in xrange(start_row, end_row)]
+    self._reset_size(start_row, end_row, start_col, end_col)
     self._input_value_map = {}
     self._cells_fetched = False
     self._queued_updates = []
@@ -135,6 +129,15 @@ class WorksheetView(object):
     self._input_value_map.clear()
     self._cells_fetched = False
     del self._queued_updates[:]
+
+  def _reset_size(self, start_row, end_row, start_col, end_col):
+    self.start_row = start_row
+    self.end_row = end_row
+    self.start_col = start_col
+    self.end_col = end_col
+    self._view_rows = [
+        WorksheetViewRow(self, row, start_col, end_col)
+        for row in xrange(start_row, end_row)]
 
   def _ensure_cells_fetched(self):
     if self._cells_fetched:
@@ -258,6 +261,7 @@ class Worksheet(WorksheetView):
 
   def refresh(self):
     self._entry = self.client.get_worksheet(self.spreadsheet.key, self.key)
+    self._reset_size(0, self.rows, 0, self.cols)
     super(Worksheet, self).refresh()
 
   def view(self, start_row=None, end_row=None, start_col=None, end_col=None):
@@ -278,14 +282,45 @@ class Worksheet(WorksheetView):
         start_row=start_row, end_row=end_row,
         start_col=start_col, end_col=end_col)
 
+  def set_size(self, rows, cols):
+    assert isinstance(rows, int) and rows > 0
+    assert isinstance(cols, int) and cols > 0
+    self._entry.row_count.text = str(rows)
+    self._entry.col_count.text = str(cols)
+    self._update()
+
   @property
   def name(self):
     return self._entry.title.text
+
+  @name.setter
+  def name(self, new_name):
+    self._entry.title.text = new_name
+    self._update()
 
   @property
   def rows(self):
     return int(self._entry.row_count.text)
 
+  @rows.setter
+  def rows(self, rows):
+    assert isinstance(rows, int) and rows > 0
+    self._entry.row_count.text = str(rows)
+    self._update()
+
   @property
   def cols(self):
     return int(self._entry.col_count.text)
+
+  @cols.setter
+  def cols(self, cols):
+    assert isinstance(cols, int) and cols > 0
+    self._entry.col_count.text = str(cols)
+    self._update()
+
+  def _update(self):
+    url = gdata.spreadsheets.client.WORKSHEET_URL % (
+        self.spreadsheet.key, self.key)
+    # TODO: Use returned entry to speed up
+    unused_entry = self.client.update(self._entry, uri=url, force=True)
+    self.refresh()
