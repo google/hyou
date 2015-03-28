@@ -93,10 +93,10 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self.key,
         desired_class=gdata.spreadsheets.data.Spreadsheet)
 
-  def add_worksheet(self, name, rows=100, cols=26):
-    self.client.add_worksheet(self.key, name, rows=rows, cols=cols)
+  def add_worksheet(self, title, rows=100, cols=26):
+    self.client.add_worksheet(self.key, title, rows=rows, cols=cols)
     self.refresh()
-    return self[name]
+    return self[title]
 
   @property
   def title(self):
@@ -112,7 +112,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
     for entry in feed.entry:
       key = entry.get_worksheet_id()
       worksheet = Worksheet(self, self.client, key, entry)
-      yield (worksheet.name, worksheet)
+      yield (worksheet.title, worksheet)
 
 
 class WorksheetView(object):
@@ -290,12 +290,12 @@ class Worksheet(WorksheetView):
     self._update()
 
   @property
-  def name(self):
+  def title(self):
     return self._entry.title.text
 
-  @name.setter
-  def name(self, new_name):
-    self._entry.title.text = new_name
+  @title.setter
+  def title(self, new_title):
+    self._entry.title.text = new_title
     self._update()
 
   @property
