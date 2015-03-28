@@ -98,6 +98,11 @@ class Spreadsheet(util.LazyOrderedDictionary):
     self.refresh()
     return self[title]
 
+  def delete_worksheet(self, title):
+    worksheet = self[title]
+    url = gdata.spreadsheets.client.WORKSHEET_URL % (self.key, worksheet.key)
+    self.client.delete(url, force=True)
+
   @property
   def title(self):
     return self._entry.title.text
