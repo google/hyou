@@ -31,18 +31,21 @@ GOOGLE_SPREADSHEET_SCOPES = (
 
 
 class Collection(util.LazyOrderedDictionary):
-  def __init__(self, credentials):
+  def __init__(self, credentials, http_client=None):
     super(Collection, self).__init__(
         self._spreadsheet_enumerator,
         self._spreadsheet_constructor)
     self.credentials = credentials
-    self.auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
     # Don't use auth_token= argument. It does not refresh tokens.
-    self.client = gdata.spreadsheets.client.SpreadsheetsClient()
-    self.auth_token.authorize(self.client)
+    self.client = gdata.spreadsheets.client.SpreadsheetsClient(
+        http_client=http_client)
+    # credentials can be None in unit tests.
+    if credentials:
+      auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
+      auth_token.authorize(self.client)
 
   @classmethod
-  def login(cls, json_path=None, json_text=None):
+  def login(cls, json_path=None, json_text=None, **kwargs):
     if json_text is None:
       with open(json_path, 'rb') as f:
         json_text = f.read()
@@ -56,7 +59,7 @@ class Collection(util.LazyOrderedDictionary):
           scope=GOOGLE_SPREADSHEET_SCOPES)
     else:
       raise ValueError('unrecognized credential format')
-    return cls(credentials)
+    return cls(credentials, **kwargs)
 
   def refresh(self):
     super(Collection, self).refresh()
