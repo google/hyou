@@ -10,20 +10,34 @@ Synopsis
 
 ```python
 import hyou
+
+# Login to Google Spreadsheet with credentials
 collection = hyou.login('/path/to/credentails.json')
+
+# Open a spreadsheet by ID
 spreadsheet = collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
+print spreadsheet.title         # => "Hyou Test Sheet"
+
+# Open a worksheet in a spreadsheet by sheet name
 worksheet = spreadsheet['Sheet1']
-print worksheet[1][0]  # "banana"
-print worksheet[1][1]  # "50"
-worksheet[2][0] = "cinamon"
+print worksheet.title           # => "Sheet1"
+print worksheet.rows            # => 5
+print worksheet.cols            # => 3
+
+# Worksheet objects can be accessed just like two-dimensional lists
+print worksheet[1][0]           # => "banana"
+print worksheet[1][1]           # => "50"
+
+# Call Worksheet.commit() to apply changes
+worksheet[2][0] = 'cinamon'
 worksheet[2][1] = 40
 worksheet.commit()
 ```
 
-Reference
----------
+Documentation
+-------------
 
-TODO(nya): Write documentation.
+Documentation is available at https://hyou.readthedocs.org/.
 
 
 Author
