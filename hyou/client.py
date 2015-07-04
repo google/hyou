@@ -105,6 +105,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
     worksheet = self[title]
     url = gdata.spreadsheets.client.WORKSHEET_URL % (self.key, worksheet.key)
     self.client.delete(url, force=True)
+    self.refresh()
 
   @property
   def title(self):
