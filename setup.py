@@ -21,7 +21,7 @@ def read_file(name):
 
 setup(
     name='hyou',
-    version='1.2',
+    version='1.3',
     author='Shuhei Takahashi',
     author_email='nya@google.com',
     description='Pythonic Interface to manipulate Google Spreadsheet',
