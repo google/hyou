@@ -3,6 +3,9 @@ Hyou Documentation
 
 Hyou provides a simple Pythonic interface to manipulate your Google Spreadsheet data.
 
+.. py:currentmodule:: hyou
+
+
 Synopsis
 --------
 
@@ -89,7 +92,7 @@ If you authorized to Google Spreadsheet with OAuth2 credential of a Google accou
 Working with Spreadsheets
 -------------------------
 
-A :py:class:`Spreadsheet` object is a ordered dictionary-like object, whose key is a worksheet title and value is a :py:class:`Worksheet` object.
+A :py:class:`Spreadsheet` object is an ordered dictionary-like object, whose key is a worksheet title and value is a :py:class:`Worksheet` object.
 
 .. code:: python
 
@@ -101,14 +104,14 @@ It also behaves just like a list when accessed with integer indices since it is 
 
     worksheet = spreadsheet[0]  # Open the first worksheet
 
-To add or delete worksheets, use :py:meth:`add_worksheet` and :py:meth:`delete_worksheet`.
+To add or delete worksheets, use :py:meth:`Spreadsheet.add_worksheet` and :py:meth:`Spreadsheet.delete_worksheet`.
 
 .. code:: python
 
     new_worksheet = spreadsheet.add_worksheet('worksheet title', rows=100, cols=26)
     spreadsheet.delete_worksheet('worksheet title')
 
-:py:attr:`title` read-write property holds the title of the spreadsheet.
+:py:attr:`Spreadsheet.title` read-write property holds the title of the spreadsheet.
 
 .. code:: python
 
@@ -133,14 +136,14 @@ A cell value is a bare input string, represented as an :py:class:`unicode` strin
 
 Inversely, you can create a formula cell by writing a formula string like `"SUM(A2:A)"`.
 
-If you attempt to write a non-string value (e.g. numbers) to a cell, it is automatically converted to a string before commit.
+If you attempt to write a non-string value (e.g. numbers) to a cell, it is automatically converted to a string.
 
 .. code:: python
 
     worksheet[0][0] = 7
-    print type(worksheet[0][0])  # unicode
+    print type(worksheet[0][0])  # => unicode
 
-Writes to cells are never committed until :py:meth:`commit` is called. You can use with statements to make sure :py:meth:`commit` is called:
+Writes to cells are never committed until :py:meth:`Worksheet.commit` is called. You can use *with statements* to make sure :py:meth:`Worksheet.commit` is called:
 
 .. code:: python
 
@@ -156,32 +159,32 @@ Writes to cells are never committed until :py:meth:`commit` is called. You can u
 Cache Behavior
 --------------
 
-To reduce network traffic and round-trips, data is requested on demand and cached. For example, calling :py:meth:`Worksheet.values()` first time takes some time to request data to servers, but subsequent calls return immediately because the server response is cached.
+To reduce network traffic and round-trips, data is fetched on demand and cached. For example, calling :py:meth:`Worksheet.values()` first time takes some time to fetch data to servers, but subsequent calls return immediately because the server response is cached.
 
-To clear the cache to access the up-to-date data, call :py:meth:`refresh`.
+To clear the cache to access the up-to-date data, call :py:func:`refresh`.
 
-Please be aware that any uncommitted writes to worksheet cells are discarded when :py:meth:`refresh` is called.
+Please be aware that any uncommitted writes to worksheet cells are discarded when :py:func:`refresh` is called.
 
-As for :py:class:`Worksheet`, all worksheet cells are requested when a cell is attempted to read. This can be waste of time and bandwidth if you are interested in some subrange of a worksheet. In such case, you can use views described next.
+As for :py:class:`Worksheet`, all worksheet cells are fetched when a cell is attempted to read for the first time. This can be waste of time and bandwidth if you are interested in a subrange of a worksheet. In such case, you can use views described next.
 
 
 Using Views
 -----------
 
-If you are interested in a subrange of a worksheet, you can use :py:class:`WorksheetView` for efficiency to reduce the number of cells fetched. For example, this code snippet will create a 20x10 view of a worksheet:
+If you are interested in a subrange of a worksheet, you can use :py:class:`WorksheetView` for efficiency to reduce the number of fetched cells. For example, this code snippet will create a 20x10 view of a worksheet:
 
 .. code:: python
 
     view = worksheet.view(start_row=100, end_row=120, start_col=200, end_col=210)
     assert view[0][0] == worksheet[100][200]
 
-Each view has independent cache. Reading a cell of a view will fetch the cells contained in it, instead of all cells in the worksheet.
+Each view has independent cache. Reading a cell of a view will fetch contained cells only, instead of all cells in the worksheet.
 
 
 API Reference
 -------------
 
-.. class:: hyou.Collection
+.. class:: Collection
 
    Representation of your spreadsheet collection.
 
@@ -210,7 +213,7 @@ API Reference
       Discards the associated cache. See :ref:`cache-behavior-section` for details.
 
 
-.. class:: hyou.Spreadsheet
+.. class:: Spreadsheet
 
    Representation of a spreadsheet.
 
@@ -257,7 +260,7 @@ API Reference
       Discards the associated cache. See :ref:`cache-behavior-section` for details.
 
 
-.. class:: hyou.Worksheet
+.. class:: Worksheet
 
    Representation of a worksheet.
 
@@ -317,7 +320,7 @@ API Reference
       Discards the associated cache. Please be aware that any uncommitted writes to cells are also discarded. See :ref:`cache-behavior-section` for details.
 
 
-.. class:: hyou.WorksheetView
+.. class:: WorksheetView
 
    Representation of a subrange of a worksheet.
 
