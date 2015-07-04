@@ -51,7 +51,7 @@ class Collection(util.LazyOrderedDictionary):
         json_text = f.read()
     json_data = json.loads(json_text)
     if '_module' in json_data:
-      credentials = auth2client.client.Credentials.new_from_json(json_data)
+      credentials = oauth2client.client.Credentials.new_from_json(json_text)
     elif 'private_key' in json_data:
       credentials = oauth2client.client.SignedJwtAssertionCredentials(
           service_account_name=json_data['client_email'],
