@@ -191,7 +191,7 @@ API Reference
    :py:meth:`__len__`, :py:meth:`__iter__`.
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called).
 
-   .. classmethod:: Collection.login(json_path=None, json_text=None)
+   .. classmethod:: login(json_path=None, json_text=None)
 
       Logs in to Google Spreadsheet, and returns a new :py:class:`Collection` object.
 
