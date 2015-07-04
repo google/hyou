@@ -13,5 +13,8 @@
 # limitations under the License.
 
 from .client import Collection
+from .client import Spreadsheet
+from .client import Worksheet
+from .client import WorksheetView
 
 login = Collection.login
