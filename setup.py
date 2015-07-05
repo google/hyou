@@ -24,7 +24,7 @@ setup(
     version='1.3',
     author='Shuhei Takahashi',
     author_email='nya@google.com',
-    description='Pythonic Interface to manipulate Google Spreadsheet',
+    description='Pythonic Interface to access Google Spreadsheet',
     long_description=read_file('README.txt'),
     url='https://github.com/google/hyou/',
     packages=['hyou'],

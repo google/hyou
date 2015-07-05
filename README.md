@@ -1,7 +1,7 @@
-Hyou - Pythonic Interface to manipulate Google Spreadsheet
-==========================================================
+Hyou - Pythonic Interface to access Google Spreadsheet
+======================================================
 
-Hyou provides a simple Pythonic interface to manipulate your
+Hyou provides a simple Pythonic interface to access your
 Google Spreadsheet data.
 
 

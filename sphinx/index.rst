@@ -1,13 +1,13 @@
 Hyou Documentation
 ==================
 
-Hyou provides a simple Pythonic interface to manipulate your Google Spreadsheet data.
+Hyou provides a simple Pythonic interface to access your Google Spreadsheet data.
 
 .. py:currentmodule:: hyou
 
 
 Synopsis
---------
+========
 
 .. code:: python
 
@@ -34,6 +34,24 @@ Synopsis
     worksheet[2][0] = 'cinamon'
     worksheet[2][1] = 40
     worksheet.commit()
+
+
+User Guide
+==========
+
+
+Installation
+------------
+
+Hyou can be installed from pypi with pip.
+
+.. code::
+
+    $ pip install hyou
+
+Source code is available on GitHub.
+
+https://github.com/google/hyou
 
 
 Preparing Credentials
@@ -182,7 +200,7 @@ Each view has independent cache. Reading a cell of a view will fetch contained c
 
 
 API Reference
--------------
+=============
 
 .. class:: Collection
 
@@ -347,6 +365,9 @@ API Reference
 
       Discards the associated cache. Please be aware that any uncommitted writes to cells are also discarded. See :ref:`cache-behavior-section` for details.
 
+
+Notices
+=======
 
 
 Author
