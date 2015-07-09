@@ -93,18 +93,18 @@ Working with Collections
 
 A :py:class:`Collection` object represents a set of Google Spreadsheet documents. It is a dictionary-like object, whose key is spreadsheet ID and value is a :py:class:`Spreadsheet` object.
 
-If you know a spreadsheet ID, you can open it just by indexing. For example, to open https://docs.google.com/spreadsheets/d/1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ/edit :
-
-.. code:: python
-
-    spreadsheet = collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
-
-If you authorized to Google Spreadsheet with OAuth2 credential of a Google account (not a service account), you can enumerate the spreadsheets you own by accessing a :py:class:`Collection` object like a dictionary. This does not apply to service accounts because they do not own any document.
+You can enumerate the spreadsheets you own by accessing a :py:class:`Collection` object like a dictionary.
 
 .. code:: python
 
     for id, spreadsheet in collection.iteritems():
         print id, spreadsheet.title
+
+If you know a spreadsheet ID, you can open it just by indexing. This is faster than iterating through :py:class:`Collection` because it does not fetch the list of spreadsheets. For example, to open https://docs.google.com/spreadsheets/d/1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ/edit :
+
+.. code:: python
+
+    spreadsheet = collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
 
 
 Working with Spreadsheets
