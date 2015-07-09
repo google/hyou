@@ -16,9 +16,12 @@ import collections
 import datetime
 import json
 
+import apiclient.discovery
+import apiclient.http
 import gdata.gauth
 import gdata.spreadsheets.client
 import gdata.spreadsheets.data
+import httplib2
 import oauth2client.client
 
 from . import util
@@ -39,10 +42,13 @@ class Collection(util.LazyOrderedDictionary):
     # Don't use auth_token= argument. It does not refresh tokens.
     self.client = gdata.spreadsheets.client.SpreadsheetsClient(
         http_client=http_client)
+    auth_http = httplib2.Http()
     # credentials can be None in unit tests.
     if credentials:
       auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
       auth_token.authorize(self.client)
+      auth_http = self.credentials.authorize(auth_http)
+    self.drive = apiclient.discovery.build('drive', 'v2', http=auth_http)
 
   @classmethod
   def login(cls, json_path=None, json_text=None, **kwargs):
@@ -60,6 +66,19 @@ class Collection(util.LazyOrderedDictionary):
     else:
       raise ValueError('unrecognized credential format')
     return cls(credentials, **kwargs)
+
+  def create_spreadsheet(self, title, rows=1000, cols=26):
+    body = {
+        'title': title,
+        'mimeType': 'application/vnd.google-apps.spreadsheet',
+    }
+    response = self.drive.files().insert(body=body).execute()
+    key = response['id']
+    self.refresh()
+    spreadsheet = self[key]
+    if (rows, cols) != (1000, 26):
+      spreadsheet[0].set_size(rows, cols)
+    return spreadsheet
 
   def refresh(self):
     super(Collection, self).refresh()

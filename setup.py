@@ -30,6 +30,7 @@ setup(
     packages=['hyou'],
     install_requires=[
         'gdata',
+        'google-api-python-client',
         'oauth2client',
         'python-gflags',
     ],
