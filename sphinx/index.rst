@@ -126,7 +126,7 @@ To add or delete worksheets, use :py:meth:`Spreadsheet.add_worksheet` and :py:me
 
 .. code:: python
 
-    new_worksheet = spreadsheet.add_worksheet('worksheet title', rows=100, cols=26)
+    new_worksheet = spreadsheet.add_worksheet('worksheet title', rows=1000, cols=26)
     spreadsheet.delete_worksheet('worksheet title')
 
 :py:attr:`Spreadsheet.title` read-write property holds the title of the spreadsheet.
@@ -202,6 +202,21 @@ Each view has independent cache. Reading a cell of a view will fetch contained c
 API Reference
 =============
 
+.. function:: login(json_path=None, json_text=None)
+
+   Logs in to Google Spreadsheet, and returns a new :py:class:`Collection` object.
+
+   :param str json_path: The filesystem path to a credential JSON file.
+   :param str json_text: A credential JSON in text format.
+
+   Either one of `json_path` or `json_text` should be given.
+
+   This method accepts two formats of credential JSONs:
+
+   1. JSON file that serialized :py:class:`oauth2client.client.Credentials`.
+   2. JSON file downloaded from Google Developer Console (for service accounts)
+
+
 .. class:: Collection
 
    Representation of your spreadsheet collection.
@@ -214,17 +229,17 @@ API Reference
 
    .. classmethod:: login(json_path=None, json_text=None)
 
-      Logs in to Google Spreadsheet, and returns a new :py:class:`Collection` object.
+      An alias of :py:func:`login`.
 
-      :param str json_path: The filesystem path to a credential JSON file.
-      :param str json_text: A credential JSON in text format.
+   .. method:: create_spreadsheet(title, rows=1000, cols=26)
 
-      Either one of `json_path` or `json_text` should be given.
+      Creates a new spreadsheet, and returns a :py:class:`Spreadsheet` instance.
 
-      This method accepts two formats of credential JSONs:
+      :param unicode title: The title of a new spreadsheet.
+      :param int rows: The number of rows of a new spreadsheet.
+      :param int cols: The number of cols of a new spreadsheet.
 
-      1. JSON file that serialized :py:class:`oauth2client.client.Credentials`.
-      2. JSON file downloaded from Google Developer Console (for service accounts)
+      Addition of a spreadsheet is committed immediately and :py:meth:`refresh` is automatically called to reflect changes.
 
    .. method:: refresh()
 
@@ -242,6 +257,12 @@ API Reference
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called), and elements are ordered.
 
    Ordered values can by accessed by indices. That is, ``obj[i]`` is equivalent to ``obj.values()[i]`` when ``i`` is an integer.
+
+   .. attribute:: key
+
+      The spreadsheet ID.
+
+      This property is read-only.
 
    .. attribute:: title
 
