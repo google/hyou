@@ -69,11 +69,11 @@ There are three options:
 
 If you just want to access your spreadsheet programatically, 1 is the safe and easy way. In other options, you need some steps to register an application at Google Developer Console. (TODO(nya): Describe those options too)
 
-To authorize as your Google account with a shared application project, run ``tools/generate_oauth2_credentials.py``.
+To authorize as your Google account with a shared application project, run ``generate_oauth2_credentials.py``.
 
 .. code::
 
-    $ tools/generate_oauth2_credentials.py ~/.drive.json
+    $ generate_oauth2_credentials.py ~/.drive.json
     Please visit this URL to get the authorization code:
     https://accounts.google.com/o/oauth2/auth?scope=...
 
