@@ -18,7 +18,7 @@
 
 Usage:
 upload_sheet.py --authenticate
-upload_sheet.py <filename> <title>
+upload_sheet.py <filename>
 """
 
 import csv
@@ -52,11 +52,10 @@ def load_sheet(path):
 
 
 def upload_main(argv):
-  if len(argv) != 3:
+  if len(argv) != 2:
     return __doc__
 
-  path, title = argv[1:]
-  title = title.decode('utf-8')
+  path = argv[1]
 
   sheet = load_sheet(path)
 
@@ -66,6 +65,7 @@ def upload_main(argv):
     return ('Your credential is missing, expired or invalid.'
             'Please authenticate again by --authenticate.')
 
+  title = os.path.basename(path).decode('utf-8')
   spreadsheet = collection.create_spreadsheet(
       title, rows=len(sheet), cols=len(sheet[0]))
 
