@@ -47,7 +47,9 @@ Hyou can be installed from pypi with pip.
 
 .. code::
 
-    $ pip install hyou
+    $ sudo pip install hyou
+    or
+    $ pip install --user hyou
 
 Source code is available on GitHub.
 
