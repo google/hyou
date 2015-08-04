@@ -28,6 +28,10 @@ setup(
     long_description=read_file('README.txt'),
     url='https://github.com/google/hyou/',
     packages=['hyou'],
+    scripts=[
+        'tools/generate_oauth2_credentials.py',
+        'tools/upload_sheet.py',
+    ],
     install_requires=[
         'gdata',
         'google-api-python-client',
