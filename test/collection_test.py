@@ -6,7 +6,7 @@ import mox
 import hyou.client
 
 
-class MockSpreadsheetFeed(object):
+class FakeSpreadsheetFeed(object):
   def __init__(self, key):
     self._key = key
 
@@ -14,7 +14,7 @@ class MockSpreadsheetFeed(object):
     return self._key
 
 
-class MockSpreadsheetsFeed(object):
+class FakeSpreadsheetsFeed(object):
   def __init__(self, entries):
     self.entry = entries
 
@@ -33,7 +33,7 @@ class CollectionTest(unittest.TestCase):
     self.mox.VerifyAll()
 
   def test_accessors_with_constructor(self):
-    banana_feed = MockSpreadsheetFeed('banana')
+    banana_feed = FakeSpreadsheetFeed('banana')
     self.client.get_feed(
         hyou.client.SPREADSHEET_URL % 'banana',
         desired_class=gdata.spreadsheets.data.Spreadsheet
@@ -46,10 +46,10 @@ class CollectionTest(unittest.TestCase):
     self.assertEqual(banana, self.collection['banana'])
 
   def test_accessors_with_enumerator(self):
-    apple_feed = MockSpreadsheetFeed('apple')
-    banana_feed = MockSpreadsheetFeed('banana')
-    cinamon_feed = MockSpreadsheetFeed('cinamon')
-    feed = MockSpreadsheetsFeed([apple_feed, banana_feed, cinamon_feed])
+    apple_feed = FakeSpreadsheetFeed('apple')
+    banana_feed = FakeSpreadsheetFeed('banana')
+    cinamon_feed = FakeSpreadsheetFeed('cinamon')
+    feed = FakeSpreadsheetsFeed([apple_feed, banana_feed, cinamon_feed])
 
     self.client.get_spreadsheets().AndReturn(feed)
     apple = hyou.client.Spreadsheet(

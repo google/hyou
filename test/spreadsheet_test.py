@@ -7,23 +7,23 @@ import mox
 import hyou.client
 
 
-class MockSpreadsheetTitleFeed(object):
+class FakeSpreadsheetTitleFeed(object):
   def __init__(self, title):
     self.text = title
 
 
-class MockSpreadsheetUpdatedFeed(object):
+class FakeSpreadsheetUpdatedFeed(object):
   def __init__(self):
     self.text = '2015-08-11T12:34:56.789Z'
 
 
-class MockSpreadsheetFeed(object):
+class FakeSpreadsheetFeed(object):
   def __init__(self, title):
-    self.title = MockSpreadsheetTitleFeed(title)
-    self.updated = MockSpreadsheetUpdatedFeed()
+    self.title = FakeSpreadsheetTitleFeed(title)
+    self.updated = FakeSpreadsheetUpdatedFeed()
 
 
-class MockWorksheetFeed(object):
+class FakeWorksheetFeed(object):
   def __init__(self, key):
     self._key = key
 
@@ -31,7 +31,7 @@ class MockWorksheetFeed(object):
     return self._key
 
 
-class MockWorksheetsFeed(object):
+class FakeWorksheetsFeed(object):
   def __init__(self, entries):
     self.entry = entries
 
@@ -43,7 +43,7 @@ class SpreadsheetTest(unittest.TestCase):
     self.client = self.mox.CreateMock(
         gdata.spreadsheets.client.SpreadsheetsClient)
     self.drive = None
-    entry = MockSpreadsheetFeed('Cinamon')
+    entry = FakeSpreadsheetFeed('Cinamon')
     self.spreadsheet = hyou.client.Spreadsheet(
         None, self.client, self.drive, 'cinamon', entry)
 
@@ -52,10 +52,10 @@ class SpreadsheetTest(unittest.TestCase):
     self.mox.VerifyAll()
 
   def set_enumerator_expectations(self):
-    sheet1_feed = MockWorksheetFeed('s1')
-    sheet2_feed = MockWorksheetFeed('s2')
-    sheet3_feed = MockWorksheetFeed('s3')
-    feed = MockWorksheetsFeed([sheet1_feed, sheet2_feed, sheet3_feed])
+    sheet1_feed = FakeWorksheetFeed('s1')
+    sheet2_feed = FakeWorksheetFeed('s2')
+    sheet3_feed = FakeWorksheetFeed('s3')
+    feed = FakeWorksheetsFeed([sheet1_feed, sheet2_feed, sheet3_feed])
 
     self.client.get_worksheets('cinamon').AndReturn(feed)
     sheet1 = hyou.client.Worksheet(
