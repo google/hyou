@@ -32,12 +32,7 @@ setup(
         'tools/generate_oauth2_credentials.py',
         'tools/upload_sheet.py',
     ],
-    install_requires=[
-        'gdata',
-        'google-api-python-client',
-        'oauth2client',
-        'python-gflags',
-    ],
+    install_requires=read_file('requirements.txt').splitlines(),
     classifiers = [
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
