@@ -33,6 +33,11 @@ setup(
         'tools/upload_sheet.py',
     ],
     install_requires=read_file('requirements.txt').splitlines(),
+    test_suite='nose.collector',
+    tests_require=[
+        'mox',
+        'nose',
+    ],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
