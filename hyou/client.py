@@ -62,11 +62,9 @@ class Collection(util.LazyOrderedDictionary):
     # Don't use auth_token= argument. It does not refresh tokens.
     client = gdata.spreadsheets.client.SpreadsheetsClient()
     auth_http = httplib2.Http()
-    # credentials can be None in unit tests.
-    if credentials:
-      auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
-      auth_token.authorize(self.client)
-      auth_http = self.credentials.authorize(auth_http)
+    auth_token = gdata.gauth.OAuth2TokenFromCredentials(credentials)
+    auth_token.authorize(client)
+    auth_http = credentials.authorize(auth_http)
     drive = apiclient.discovery.build('drive', 'v2', http=auth_http)
     return cls(client, drive)
 
