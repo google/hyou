@@ -33,8 +33,8 @@ setup(
         'tools/upload_sheet.py',
     ],
     install_requires=read_file('requirements.txt').splitlines(),
-    test_suite='nose.collector',
     tests_require=[
+        'coverage',
         'mox',
         'nose',
     ],
