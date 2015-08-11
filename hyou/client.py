@@ -32,26 +32,20 @@ GOOGLE_SPREADSHEET_SCOPES = (
     'https://www.googleapis.com/auth/drive',
 )
 
+SPREADSHEET_URL = (
+    'https://spreadsheets.google.com/feeds/spreadsheets/private/full/%s')
+
 
 class Collection(util.LazyOrderedDictionary):
-  def __init__(self, credentials, http_client=None):
+  def __init__(self, client, drive):
     super(Collection, self).__init__(
         self._spreadsheet_enumerator,
         self._spreadsheet_constructor)
-    self.credentials = credentials
-    # Don't use auth_token= argument. It does not refresh tokens.
-    self.client = gdata.spreadsheets.client.SpreadsheetsClient(
-        http_client=http_client)
-    auth_http = httplib2.Http()
-    # credentials can be None in unit tests.
-    if credentials:
-      auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
-      auth_token.authorize(self.client)
-      auth_http = self.credentials.authorize(auth_http)
-    self.drive = apiclient.discovery.build('drive', 'v2', http=auth_http)
+    self.client = client
+    self.drive = drive
 
   @classmethod
-  def login(cls, json_path=None, json_text=None, **kwargs):
+  def login(cls, json_path=None, json_text=None):
     if json_text is None:
       with open(json_path, 'rb') as f:
         json_text = f.read()
@@ -65,7 +59,16 @@ class Collection(util.LazyOrderedDictionary):
           scope=GOOGLE_SPREADSHEET_SCOPES)
     else:
       raise ValueError('unrecognized credential format')
-    return cls(credentials, **kwargs)
+    # Don't use auth_token= argument. It does not refresh tokens.
+    client = gdata.spreadsheets.client.SpreadsheetsClient()
+    auth_http = httplib2.Http()
+    # credentials can be None in unit tests.
+    if credentials:
+      auth_token = gdata.gauth.OAuth2TokenFromCredentials(self.credentials)
+      auth_token.authorize(self.client)
+      auth_http = self.credentials.authorize(auth_http)
+    drive = apiclient.discovery.build('drive', 'v2', http=auth_http)
+    return cls(client, drive)
 
   def create_spreadsheet(self, title, rows=1000, cols=26):
     body = {
@@ -92,8 +95,7 @@ class Collection(util.LazyOrderedDictionary):
   def _spreadsheet_constructor(self, key):
     # TODO: Upstream to gdata.
     entry = self.client.get_feed(
-        'https://spreadsheets.google.com/feeds/spreadsheets/private/full/%s' %
-        key,
+        SPREADSHEET_URL % key,
         desired_class=gdata.spreadsheets.data.Spreadsheet)
     key = entry.get_spreadsheet_key()
     return Spreadsheet(self, self.client, self.drive, key, entry)
@@ -112,8 +114,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
     super(Spreadsheet, self).refresh()
     # TODO: Upstream to gdata.
     self._entry = self.client.get_feed(
-        'https://spreadsheets.google.com/feeds/spreadsheets/private/full/%s' %
-        self.key,
+        SPREADSHEET_URL % self.key,
         desired_class=gdata.spreadsheets.data.Spreadsheet)
 
   def add_worksheet(self, title, rows=1000, cols=26):
