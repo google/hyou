@@ -87,7 +87,7 @@ class Collection(util.LazyOrderedDictionary):
     feed = self.client.get_spreadsheets()
     for entry in feed.entry:
       key = entry.get_spreadsheet_key()
-      yield (key, Spreadsheet(self, self.client, key, entry))
+      yield (key, Spreadsheet(self, self.client, self.drive, key, entry))
 
   def _spreadsheet_constructor(self, key):
     # TODO: Upstream to gdata.
@@ -96,14 +96,15 @@ class Collection(util.LazyOrderedDictionary):
         key,
         desired_class=gdata.spreadsheets.data.Spreadsheet)
     key = entry.get_spreadsheet_key()
-    return Spreadsheet(self, self.client, key, entry)
+    return Spreadsheet(self, self.client, self.drive, key, entry)
 
 
 class Spreadsheet(util.LazyOrderedDictionary):
-  def __init__(self, collection, client, key, entry):
+  def __init__(self, collection, client, drive, key, entry):
     super(Spreadsheet, self).__init__(self._worksheet_enumerator, None)
     self.collection = collection
     self.client = client
+    self.drive = drive
     self.key = key
     self._entry = entry
 
@@ -129,6 +130,12 @@ class Spreadsheet(util.LazyOrderedDictionary):
   @property
   def title(self):
     return self._entry.title.text
+
+  @title.setter
+  def title(self, new_title):
+    body = {'title': new_title}
+    response = self.drive.files().update(fileId=self.key, body=body).execute()
+    self.refresh()
 
   @property
   def updated(self):
