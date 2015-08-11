@@ -163,3 +163,11 @@ class CustomListTest(unittest.TestCase):
     self.assertEqual('apple', self.list[1])
     self.assertEqual('banana', self.list[2])
     self.assertEqual('cinamon', self.list[3])
+
+  def test_unsupported(self):
+    self.assertRaises(NotImplementedError, self.list.__delitem__, 0)
+    self.assertRaises(NotImplementedError, self.list.append, 'lemon')
+    self.assertRaises(NotImplementedError, self.list.extend, ['lemon'])
+    self.assertRaises(NotImplementedError, self.list.insert, 0, 'lemon')
+    self.assertRaises(NotImplementedError, self.list.pop)
+    self.assertRaises(NotImplementedError, self.list.remove, 'apple')

@@ -139,3 +139,21 @@ class CustomMutableFixedList(object):
     for i, new_value in enumerate(sorted(
         self, cmp=cmp, key=key, reverse=reverse)):
       self[i] = new_value
+
+  def __delitem__(self, key):
+    raise NotImplementedError('Methods changing the list size are unavailable')
+
+  def append(self, x):
+    raise NotImplementedError('Methods changing the list size are unavailable')
+
+  def extend(self, x):
+    raise NotImplementedError('Methods changing the list size are unavailable')
+
+  def insert(self, i, x):
+    raise NotImplementedError('Methods changing the list size are unavailable')
+
+  def pop(self, i=None):
+    raise NotImplementedError('Methods changing the list size are unavailable')
+
+  def remove(self, x):
+    raise NotImplementedError('Methods changing the list size are unavailable')
