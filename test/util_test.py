@@ -133,9 +133,19 @@ class PseudoList(hyou.util.CustomMutableFixedList):
     self.real_list[i] = value
 
 
-class CustomListTest(unittest.TestCase):
+class CustomMutableFixedListTest(unittest.TestCase):
   def setUp(self):
     self.list = PseudoList(['apple', 'banana', 'cinamon', 'apple'])
+
+  def test_ordering(self):
+    self.assertEqual(['apple', 'banana', 'cinamon', 'apple'], self.list)
+    self.assertNotEqual(['apple', 'banana', 'cinamon', 'lemon'], self.list)
+    self.assertNotEqual(['apple', 'banana', 'cinamon'], self.list)
+    self.assertLess(['apple', 'bacon', 'cinamon', 'apple'], self.list)
+    self.assertGreater(['apple', 'lemon', 'cinamon', 'apple'], self.list)
+    self.assertLess(['apple', 'banana', 'cinamon'], self.list)
+    self.assertGreater(
+        ['apple', 'banana', 'cinamon', 'apple', 'lemon'], self.list)
 
   def test_contains(self):
     self.assertTrue('apple' in self.list)

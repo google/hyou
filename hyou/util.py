@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
+import itertools
+
+
 class LazyOrderedDictionary(object):
   def __init__(self, enumerator, constructor):
     self._enumerator = enumerator
@@ -102,6 +106,7 @@ class LazyOrderedDictionary(object):
       self._enumerated = True
 
 
+@functools.total_ordering
 class CustomMutableFixedList(object):
   """Provides methods to mimic a mutable fixed-size Python list.
 
@@ -111,6 +116,20 @@ class CustomMutableFixedList(object):
   - __iter__
   - __len__
   """
+
+  def __eq__(self, other):
+    if len(self) != len(other):
+      return False
+    for a, b in itertools.izip(self, other):
+      if a != b:
+        return False
+    return True
+
+  def __lt__(self, other):
+    for a, b in itertools.izip(self, other):
+      if a != b:
+        return a < b
+    return len(self) < len(other)
 
   def __contains__(self, find_value):
     for value in self:
