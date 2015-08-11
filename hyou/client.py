@@ -263,12 +263,13 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     if new_value is None:
       pass
     elif isinstance(new_value, int):
-      new_value = u'%d' % new_value
+      new_value = '%d' % new_value
     elif isinstance(new_value, float):
       # Do best not to lose precision...
-      new_value = u'%20e' % new_value
+      new_value = '%20e' % new_value
     elif isinstance(new_value, str):
-      new_value = new_value.encode('utf-8')
+      # May raise UnicodeDecodeError.
+      new_value.decode('ascii')
     elif not isinstance(new_value, unicode):
       new_value = unicode(new_value)
     self._view._input_value_map[(self._row, col)] = new_value
