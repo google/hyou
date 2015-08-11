@@ -150,6 +150,13 @@ class CustomListTest(unittest.TestCase):
     self.assertEqual(1, self.list.count('banana'))
     self.assertEqual(0, self.list.count('bacon'))
 
+  def test_reverse(self):
+    self.list.reverse()
+    self.assertEqual('apple', self.list[0])
+    self.assertEqual('cinamon', self.list[1])
+    self.assertEqual('banana', self.list[2])
+    self.assertEqual('apple', self.list[3])
+
   def test_sort(self):
     self.list.sort()
     self.assertEqual('apple', self.list[0])

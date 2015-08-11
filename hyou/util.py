@@ -112,7 +112,7 @@ class CustomImmutableList(object):
   """
 
   def __contains__(self, find_value):
-    for i, value in enumerate(self):
+    for value in self:
       if value == find_value:
         return True
     return False
@@ -138,6 +138,10 @@ class CustomMutableFixedList(CustomImmutableList):
   in addition to those required by CustomImmutableList:
   - __setitem__
   """
+
+  def reverse(self):
+    for i, new_value in enumerate(list(reversed(self))):
+      self[i] = new_value
 
   def sort(self, cmp=None, key=None, reverse=False):
     for i, new_value in enumerate(sorted(
