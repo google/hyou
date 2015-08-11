@@ -154,7 +154,7 @@ A cell value is a bare input string, represented as an :py:class:`unicode` strin
 - Numbers are converted to strings.
 - Formulas (e.g. `"=SUM(A2:A)"`) are never expanded, and returned as-is.
 
-Inversely, you can create a formula cell by writing a formula string like `"SUM(A2:A)"`.
+Inversely, you can create a formula cell by writing a formula string like `"=SUM(A2:A)"`.
 
 If you attempt to write a non-string value (e.g. numbers) to a cell, it is automatically converted to a string.
 
