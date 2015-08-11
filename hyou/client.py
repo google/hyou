@@ -81,9 +81,6 @@ class Collection(util.LazyOrderedDictionary):
       spreadsheet[0].set_size(rows, cols)
     return spreadsheet
 
-  def refresh(self):
-    super(Collection, self).refresh()
-
   def _spreadsheet_enumerator(self):
     feed = self.client.get_spreadsheets()
     for entry in feed.entry:
