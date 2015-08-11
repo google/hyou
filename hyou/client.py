@@ -128,6 +128,10 @@ class Spreadsheet(util.LazyOrderedDictionary):
     self.refresh()
 
   @property
+  def url(self):
+    return 'https://docs.google.com/spreadsheets/d/%s/edit' % self.key
+
+  @property
   def title(self):
     return self._entry.title.text
 

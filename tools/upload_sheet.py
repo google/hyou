@@ -74,7 +74,7 @@ def upload_main(argv):
       for i, value in enumerate(srow):
         trow[i] = value
 
-  print 'https://docs.google.com/spreadsheets/d/%s/edit' % spreadsheet.key
+  print spreadsheet.url
 
 
 def authenticate_main(argv):

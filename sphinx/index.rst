@@ -272,6 +272,12 @@ API Reference
 
       This property is writable. Writes are committed immediately and :py:meth:`refresh` is automatically called to reflect changes.
 
+   .. attribute:: url
+
+      The URL of the spreadsheet.
+
+      This property is read-only.
+
    .. attribute:: updated
 
       The last update time of the spreadsheet as a :py:class:`datetime.datetime` object.
