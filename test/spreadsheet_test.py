@@ -42,7 +42,7 @@ class SpreadsheetTest(unittest.TestCase):
     self.mox.StubOutClassWithMocks(hyou.client, 'Worksheet')
     self.client = self.mox.CreateMock(
         gdata.spreadsheets.client.SpreadsheetsClient)
-    self.drive = None
+    self.drive = self.mox.CreateMockAnything()
     entry = FakeSpreadsheetFeed('Cinamon')
     self.spreadsheet = hyou.client.Spreadsheet(
         None, self.client, self.drive, 'cinamon', entry)
@@ -71,6 +71,11 @@ class SpreadsheetTest(unittest.TestCase):
     sheet3.key = 's3'
     sheet3.title = 'Sheet3'
     return (sheet1, sheet2, sheet3)
+
+  def set_refresh_expectations(self):
+    self.client.get_feed(
+        hyou.client.SPREADSHEET_URL % 'cinamon',
+        desired_class=gdata.spreadsheets.data.Spreadsheet)
 
   def test_worksheet_accessors(self):
     sheet1, sheet2, sheet3 = self.set_enumerator_expectations()
@@ -101,11 +106,16 @@ class SpreadsheetTest(unittest.TestCase):
     self.assertEqual(sheet2, self.spreadsheet['Sheet2'])
     self.assertEqual(sheet3, self.spreadsheet['Sheet3'])
 
+  def test_refresh(self):
+    self.set_refresh_expectations()
+
+    self.mox.ReplayAll()
+
+    self.spreadsheet.refresh()
+
   def test_add_worksheet(self):
     self.client.add_worksheet('cinamon', 'Sheet3', rows=2, cols=8)
-    self.client.get_feed(
-        hyou.client.SPREADSHEET_URL % 'cinamon',
-        desired_class=gdata.spreadsheets.data.Spreadsheet)
+    self.set_refresh_expectations()
     sheet1, sheet2, sheet3 = self.set_enumerator_expectations()
 
     self.mox.ReplayAll()
@@ -118,9 +128,7 @@ class SpreadsheetTest(unittest.TestCase):
     self.client.delete(
         gdata.spreadsheets.client.WORKSHEET_URL % ('cinamon', 's3'),
         force=True)
-    self.client.get_feed(
-        hyou.client.SPREADSHEET_URL % 'cinamon',
-        desired_class=gdata.spreadsheets.data.Spreadsheet)
+    self.set_refresh_expectations()
 
     self.mox.ReplayAll()
 
@@ -133,6 +141,18 @@ class SpreadsheetTest(unittest.TestCase):
 
   def test_title(self):
     self.assertEqual('Cinamon', self.spreadsheet.title)
+
+  def test_title_setter(self):
+    files = self.mox.CreateMockAnything()
+    self.drive.files().AndReturn(files)
+    executor = self.mox.CreateMockAnything()
+    files.update(fileId='cinamon', body={'title': 'Lemon'}).AndReturn(executor)
+    executor.execute().AndReturn({})
+    self.set_refresh_expectations()
+
+    self.mox.ReplayAll()
+
+    self.spreadsheet.title = 'Lemon'
 
   def test_updated(self):
     self.assertEqual(

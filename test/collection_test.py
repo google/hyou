@@ -25,7 +25,7 @@ class CollectionTest(unittest.TestCase):
     self.mox.StubOutClassWithMocks(hyou.client, 'Spreadsheet')
     self.client = self.mox.CreateMock(
         gdata.spreadsheets.client.SpreadsheetsClient)
-    self.drive = None
+    self.drive = self.mox.CreateMockAnything()
     self.collection = hyou.client.Collection(self.client, self.drive)
 
   def tearDown(self):
@@ -86,4 +86,28 @@ class CollectionTest(unittest.TestCase):
     self.assertEqual(banana, self.collection['banana'])
     self.assertEqual(cinamon, self.collection['cinamon'])
 
-  # TODO: test_create_spreadsheet
+  def test_create_spreadsheet(self):
+    files = self.mox.CreateMockAnything()
+    self.drive.files().AndReturn(files)
+    executor = self.mox.CreateMockAnything()
+    files.insert(body={
+        'title': 'Cinamon',
+        'mimeType': 'application/vnd.google-apps.spreadsheet',
+    }).AndReturn(executor)
+    executor.execute().AndReturn({'id': 'cinamon'})
+
+    cinamon_feed = FakeSpreadsheetFeed('cinamon')
+    self.client.get_feed(
+        hyou.client.SPREADSHEET_URL % 'cinamon',
+        desired_class=gdata.spreadsheets.data.Spreadsheet
+    ).AndReturn(cinamon_feed)
+    cinamon = hyou.client.Spreadsheet(
+        self.collection, self.client, self.drive, 'cinamon', cinamon_feed)
+
+    worksheet = self.mox.CreateMockAnything()
+    cinamon[0].AndReturn(worksheet)
+    worksheet.set_size(2, 8)
+
+    self.mox.ReplayAll()
+
+    self.collection.create_spreadsheet('Cinamon', rows=2, cols=8)
