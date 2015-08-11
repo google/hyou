@@ -214,7 +214,7 @@ class WorksheetView(object):
       yield row
 
   def __repr__(self):
-    return '<%s %r>' % (self.__class__.__name__, self._view_rows,)
+    return repr(self._view_rows)
 
   def __enter__(self):
     return self
