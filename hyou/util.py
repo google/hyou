@@ -140,5 +140,6 @@ class CustomMutableFixedList(CustomImmutableList):
   """
 
   def sort(self, cmp=None, key=None, reverse=False):
-    for i, new_value in sorted(self, cmp=cmp, key=key, reverse=reverse):
+    for i, new_value in enumerate(sorted(
+        self, cmp=cmp, key=key, reverse=reverse)):
       self[i] = new_value

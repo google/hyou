@@ -94,3 +94,65 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
     self.assertEqual('banana', self.dict['B'])
     self.assertEqual(['A', 'C', 'B'], self.dict.keys())
     self.assertEqual(['apple', 'cinamon', 'banana'], self.dict.values())
+
+  def test_no_constructor_indexing(self):
+    self.constructor('A').AndReturn(None)
+    self.enumerator().AndReturn([('A', 'apple')])
+    self.mox.ReplayAll()
+    self.assertEqual('apple', self.dict['A'])
+
+  def test_no_constructor_indexing_miss(self):
+    self.constructor('A').AndReturn(None)
+    self.enumerator().AndReturn([('B', 'banana')])
+    self.mox.ReplayAll()
+    self.assertRaises(KeyError, self.dict.__getitem__, 'A')
+
+  def test_get(self):
+    self.enumerator().AndReturn([('A', 'apple')])
+    self.constructor('B').AndReturn(None)
+    self.mox.ReplayAll()
+    list(self.dict)
+    self.assertEqual('apple', self.dict.get('A', 'missing'))
+    self.assertEqual('missing', self.dict.get('B', 'missing'))
+
+
+class PseudoList(hyou.util.CustomMutableFixedList):
+  def __init__(self, real_list):
+    self.real_list = real_list
+
+  def __getitem__(self, i):
+    return self.real_list[i]
+
+  def __iter__(self):
+    return iter(self.real_list)
+
+  def __len__(self):
+    return len(self.real_list)
+
+  def __setitem__(self, i, value):
+    self.real_list[i] = value
+
+
+class CustomListTest(unittest.TestCase):
+  def setUp(self):
+    self.list = PseudoList(['apple', 'banana', 'cinamon', 'apple'])
+
+  def test_contains(self):
+    self.assertTrue('apple' in self.list)
+    self.assertFalse('bacon' in self.list)
+
+  def test_index(self):
+    self.assertEqual(0, self.list.index('apple'))
+    self.assertRaises(ValueError, self.list.index, 'bacon')
+
+  def test_count(self):
+    self.assertEqual(2, self.list.count('apple'))
+    self.assertEqual(1, self.list.count('banana'))
+    self.assertEqual(0, self.list.count('bacon'))
+
+  def test_sort(self):
+    self.list.sort()
+    self.assertEqual('apple', self.list[0])
+    self.assertEqual('apple', self.list[1])
+    self.assertEqual('banana', self.list[2])
+    self.assertEqual('cinamon', self.list[3])
