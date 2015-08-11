@@ -61,13 +61,11 @@ class LazyOrderedDictionary(object):
       self._ensure_enumerated()
       return self._cache_list[key][1]
     index = self._cache_index.get(key)
-    if index is None and self._constructor:
-      try:
-        value = self._constructor(key)
-      except Exception:
-        pass
-      else:
-        assert value is not None
+    if index is not None:
+      return self._cache_list[index][1]
+    if self._constructor:
+      value = self._constructor(key)
+      if value is not None:
         index = len(self._cache_list)
         self._cache_index[key] = index
         self._cache_list.append((key, value))
