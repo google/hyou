@@ -102,11 +102,12 @@ class LazyOrderedDictionary(object):
       self._enumerated = True
 
 
-class CustomImmutableList(object):
-  """Provides methods to mimic a immutable Python list.
+class CustomMutableFixedList(object):
+  """Provides methods to mimic a mutable fixed-size Python list.
 
   Subclasses need to provide implementation of at least following methods:
   - __getitem__
+  - __setitem__
   - __iter__
   - __len__
   """
@@ -117,12 +118,6 @@ class CustomImmutableList(object):
         return True
     return False
 
-  def index(self, find_value):
-    for i, value in enumerate(self):
-      if value == find_value:
-        return i
-    raise ValueError('%r is not in list' % find_value)
-
   def count(self, find_value):
     result = 0
     for value in self:
@@ -130,14 +125,11 @@ class CustomImmutableList(object):
         result += 1
     return result
 
-
-class CustomMutableFixedList(CustomImmutableList):
-  """Provides methods to mimic a mutable Python list.
-
-  Subclasses need to provide implementation of at least following methods,
-  in addition to those required by CustomImmutableList:
-  - __setitem__
-  """
+  def index(self, find_value):
+    for i, value in enumerate(self):
+      if value == find_value:
+        return i
+    raise ValueError('%r is not in list' % find_value)
 
   def reverse(self):
     for i, new_value in enumerate(list(reversed(self))):
