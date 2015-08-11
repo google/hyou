@@ -256,7 +256,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
       raise KeyError()
     if (self._row, col) not in self._view._input_value_map:
       self._view._ensure_cells_fetched()
-    return self._view._input_value_map.get((self._row, col))
+    return self._view._input_value_map.get((self._row, col), '')
 
   def __setitem__(self, index, new_value):
     assert isinstance(index, int)
@@ -283,7 +283,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
   def __iter__(self):
     self._view._ensure_cells_fetched()
     for col in xrange(self._start_col, self._end_col):
-      yield self._view._input_value_map.get((self._row, col))
+      yield self._view._input_value_map.get((self._row, col), '')
 
   def __repr__(self):
     return repr([self[i] for i in xrange(len(self))])
