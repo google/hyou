@@ -32,7 +32,12 @@ setup(
         'tools/generate_oauth2_credentials.py',
         'tools/upload_sheet.py',
     ],
-    install_requires=read_file('requirements.txt').splitlines(),
+    install_requires=[
+        'gdata',
+        'google-api-python-client',
+        'oauth2client',
+        'python-gflags',
+    ],
     tests_require=[
         'coverage',
         'mox',
