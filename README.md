@@ -4,6 +4,7 @@ Hyou - Pythonic Interface to access Google Spreadsheet
 Hyou provides a simple Pythonic interface to access your
 Google Spreadsheet data.
 
+[![PyPI version](https://badge.fury.io/py/hyou.svg)](http://badge.fury.io/py/hyou)
 [![Build Status](https://travis-ci.org/google/hyou.svg)](https://travis-ci.org/google/hyou)
 
 
