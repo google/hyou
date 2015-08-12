@@ -33,15 +33,15 @@ setup(
         'tools/upload_sheet.py',
     ],
     install_requires=[
-        'gdata',
-        'google-api-python-client',
-        'oauth2client',
-        'python-gflags',
+        'gdata>=2.0.18',
+        'google-api-python-client>=1.4.1',
+        'oauth2client>=1.4.12',
+        'python-gflags>=2.0',
     ],
     tests_require=[
-        'coverage',
-        'mox',
-        'nose',
+        'coverage>=3.7.1',
+        'mox>=0.5.3',
+        'nose>=1.3.7',
     ],
     classifiers = [
         'Development Status :: 4 - Beta',
