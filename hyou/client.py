@@ -202,6 +202,9 @@ class WorksheetView(object):
     self.client.batch(feed, force=True)
     del self._queued_updates[:]
 
+  def __nonzero__(self):
+    return len(self) > 0
+
   def __getitem__(self, index):
     return self._view_rows[index]
 
@@ -236,6 +239,9 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     self._row = row
     self._start_col = start_col
     self._end_col = end_col
+
+  def __nonzero__(self):
+    return len(self) > 0
 
   def __getitem__(self, index):
     if isinstance(index, slice):
