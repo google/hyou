@@ -272,7 +272,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     if not (self._start_col <= col < self._end_col):
       raise IndexError()
     if new_value is None:
-      pass
+      new_value = ''
     elif isinstance(new_value, int):
       new_value = '%d' % new_value
     elif isinstance(new_value, float):
