@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import unittest
 
+import apiclient.discovery
 import gdata.spreadsheets.client
 import mox
 
@@ -45,6 +47,28 @@ class CollectionTest(unittest.TestCase):
   def tearDown(self):
     self.mox.UnsetStubs()
     self.mox.VerifyAll()
+
+  def test_login_user(self):
+    self.mox.StubOutWithMock(apiclient.discovery, 'build')
+    apiclient.discovery.build('drive', 'v2', http=mox.IgnoreArg())
+
+    self.mox.ReplayAll()
+
+    json_path = os.path.join(os.path.dirname(__file__), 'test_user.json')
+    hyou.client.Collection.login(json_path)
+
+  def test_login_bot(self):
+    self.mox.StubOutWithMock(apiclient.discovery, 'build')
+    apiclient.discovery.build('drive', 'v2', http=mox.IgnoreArg())
+
+    self.mox.ReplayAll()
+
+    json_path = os.path.join(os.path.dirname(__file__), 'test_bot.json')
+    hyou.client.Collection.login(json_path)
+
+  def test_login_invalid(self):
+    json_path = os.path.join(os.path.dirname(__file__), 'test_invalid.json')
+    self.assertRaises(ValueError, hyou.client.Collection.login, json_path)
 
   def test_accessors_with_constructor(self):
     banana_feed = FakeSpreadsheetFeed('banana')
