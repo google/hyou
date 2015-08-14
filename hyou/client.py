@@ -251,7 +251,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         stop = start
       return WorksheetViewRow(
           self._view, self._row,
-          self._start_col + start, self._end_col + stop)
+          self._start_col + start, self._start_col + stop)
     assert isinstance(index, int)
     if index < 0:
       col = self._end_col + index
