@@ -40,6 +40,17 @@ Documentation
 
 Documentation is available at https://hyou.readthedocs.org/.
 
+Changelog
+---------
+
+2.0.0 (2015-08-14)
+
+-  First stable release with 100% test coverage.
+
+1.x
+
+-  Beta releases.
+
 Author
 ------
 

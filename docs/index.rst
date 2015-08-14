@@ -398,6 +398,18 @@ API Reference
       Discards the associated cache. Please be aware that any uncommitted writes to cells are also discarded. See :ref:`cache-behavior-section` for details.
 
 
+Changelog
+=========
+
+2.0.0 (2015-08-14)
+
+- First stable release with 100% test coverage.
+
+1.x
+
+- Beta releases.
+
+
 Notices
 =======
 
