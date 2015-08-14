@@ -255,7 +255,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     assert isinstance(index, int)
     col = self._start_col + index
     if not (self._start_col <= col < self._end_col):
-      raise KeyError()
+      raise IndexError()
     if (self._row, col) not in self._view._input_value_map:
       self._view._ensure_cells_fetched()
     return self._view._input_value_map.get((self._row, col), '')
@@ -264,7 +264,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     assert isinstance(index, int)
     col = self._start_col + index
     if not (self._start_col <= col < self._end_col):
-      raise KeyError()
+      raise IndexError()
     if new_value is None:
       pass
     elif isinstance(new_value, int):
@@ -315,9 +315,9 @@ class Worksheet(WorksheetView):
     if end_col is None:
       end_col = self.cols
     if not (0 <= start_row <= end_row <= self.rows):
-      raise KeyError()
+      raise IndexError()
     if not (0 <= start_col <= end_col <= self.cols):
-      raise KeyError()
+      raise IndexError()
     return WorksheetView(
         self, self.client,
         start_row=start_row, end_row=end_row,
