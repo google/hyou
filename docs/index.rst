@@ -10,7 +10,7 @@ Hyou provides a simple Pythonic interface to access your Google Spreadsheet data
 
 
 Synopsis
-========
+--------
 
 .. code:: python
 
@@ -40,11 +40,11 @@ Synopsis
 
 
 User Guide
-==========
+----------
 
 
 Installation
-------------
+~~~~~~~~~~~~
 
 Hyou can be installed from pypi with pip.
 
@@ -60,7 +60,7 @@ https://github.com/google/hyou
 
 
 Preparing Credentials
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 The first step is to prepare a credential you access Google Spreadsheet with.
 
@@ -94,7 +94,7 @@ Once you prepared a credential JSON file, it is very simple to connect to Google
 
 
 Working with Collections
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 A :py:class:`Collection` object represents a set of Google Spreadsheet documents. It is a dictionary-like object, whose key is spreadsheet ID and value is a :py:class:`Spreadsheet` object.
 
@@ -113,7 +113,7 @@ If you know a spreadsheet ID, you can open it just by indexing. This is faster t
 
 
 Working with Spreadsheets
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A :py:class:`Spreadsheet` object is an ordered dictionary-like object, whose key is a worksheet title and value is a :py:class:`Worksheet` object.
 
@@ -143,7 +143,7 @@ To add or delete worksheets, use :py:meth:`Spreadsheet.add_worksheet` and :py:me
 
 
 Working with Worksheets
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 A :py:class:`Worksheet` object can be accessed just like two-dimensional string lists.
 
@@ -180,7 +180,7 @@ Writes to cells are never committed until :py:meth:`Worksheet.commit` is called.
 .. _cache-behavior-section:
 
 Cache Behavior
---------------
+~~~~~~~~~~~~~~
 
 To reduce network traffic and round-trips, data is fetched on demand and cached. For example, calling :py:meth:`Worksheet.values()` first time takes some time to fetch data to servers, but subsequent calls return immediately because the server response is cached.
 
@@ -192,7 +192,7 @@ As for :py:class:`Worksheet`, all worksheet cells are fetched when a cell is att
 
 
 Using Views
------------
+~~~~~~~~~~~
 
 If you are interested in a subrange of a worksheet, you can use :py:class:`WorksheetView` for efficiency to reduce the number of fetched cells. For example, this code snippet will create a 20x10 view of a worksheet:
 
@@ -205,7 +205,7 @@ Each view has independent cache. Reading a cell of a view will fetch contained c
 
 
 API Reference
-=============
+-------------
 
 .. function:: login(json_path=None, json_text=None)
 
@@ -399,7 +399,7 @@ API Reference
 
 
 Changelog
-=========
+---------
 
 2.0.0 (2015-08-14)
 
@@ -411,11 +411,11 @@ Changelog
 
 
 Notices
-=======
+-------
 
 
 Author
-------
+~~~~~~
 
 Shuhei Takahashi
 
@@ -423,13 +423,13 @@ Shuhei Takahashi
 -  Twitter: https://twitter.com/nya3jp/
 
 Disclaimer
-----------
+~~~~~~~~~~
 
 This library is authored by a Googler and copyrighted by Google, but is
 not an official Google product.
 
 License
--------
+~~~~~~~
 
 Copyright 2015 Google Inc. All Rights Reserved.
 
