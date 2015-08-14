@@ -253,7 +253,10 @@ class WorksheetViewRow(util.CustomMutableFixedList):
           self._view, self._row,
           self._start_col + start, self._end_col + stop)
     assert isinstance(index, int)
-    col = self._start_col + index
+    if index < 0:
+      col = self._end_col + index
+    else:
+      col = self._start_col + index
     if not (self._start_col <= col < self._end_col):
       raise IndexError()
     if (self._row, col) not in self._view._input_value_map:
@@ -262,7 +265,10 @@ class WorksheetViewRow(util.CustomMutableFixedList):
 
   def __setitem__(self, index, new_value):
     assert isinstance(index, int)
-    col = self._start_col + index
+    if index < 0:
+      col = self._end_col + index
+    else:
+      col = self._start_col + index
     if not (self._start_col <= col < self._end_col):
       raise IndexError()
     if new_value is None:
