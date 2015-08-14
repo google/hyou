@@ -3,6 +3,9 @@ Hyou Documentation
 
 Hyou provides a simple Pythonic interface to access your Google Spreadsheet data.
 
+|PyPI version| |Build Status| |Coverage Status|
+
+
 .. py:currentmodule:: hyou
 
 
@@ -431,3 +434,11 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+
+.. |PyPI version| image:: https://badge.fury.io/py/hyou.svg
+   :target: http://badge.fury.io/py/hyou
+.. |Build Status| image:: https://travis-ci.org/google/hyou.svg
+   :target: https://travis-ci.org/google/hyou
+.. |Coverage Status| image:: https://coveralls.io/repos/google/hyou/badge.svg?branch=master&service=github
+   :target: https://coveralls.io/github/google/hyou?branch=master
