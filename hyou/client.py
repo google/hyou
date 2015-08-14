@@ -158,7 +158,6 @@ class WorksheetView(object):
     self._input_value_map = {}
     self._cells_fetched = False
     self._queued_updates = []
-    self.refresh()
 
   def refresh(self):
     self._input_value_map.clear()
