@@ -277,7 +277,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
       new_value = '%d' % new_value
     elif isinstance(new_value, float):
       # Do best not to lose precision...
-      new_value = '%20e' % new_value
+      new_value = '%.20e' % new_value
     elif isinstance(new_value, str):
       # May raise UnicodeDecodeError.
       new_value.decode('ascii')
