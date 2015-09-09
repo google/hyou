@@ -14,6 +14,7 @@
 
 import collections
 import datetime
+import itertools
 import json
 
 import apiclient.discovery
@@ -264,6 +265,18 @@ class WorksheetViewRow(util.CustomMutableFixedList):
     return self._view._input_value_map.get((self._row, col), '')
 
   def __setitem__(self, index, new_value):
+    if isinstance(index, slice):
+      start, stop, step = index.indices(len(self))
+      assert step == 1, 'slicing with step is not supported'
+      if stop < start:
+        stop = start
+      if len(new_value) != stop - start:
+        raise ValueError(
+            'Tried to assign %d values to %d element slice' %
+            (len(new_value), stop - start))
+      for i, new_value_one in itertools.izip(xrange(start, stop), new_value):
+        self[i] = new_value_one
+      return
     assert isinstance(index, int)
     if index < 0:
       col = self._end_col + index

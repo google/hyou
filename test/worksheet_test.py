@@ -187,6 +187,52 @@ class WorksheetTest(unittest.TestCase):
     self.assertRaises(IndexError, self.worksheet[1].__setitem__, 5, '(*8*)')
     self.worksheet.commit()
 
+  def test_write_slice(self):
+    self.client.batch(
+        mox.Func(
+            lambda feed:
+                len(feed.entry) == 9 and
+                feed.entry[0].cell.row == '1' and
+                feed.entry[0].cell.col == '1' and
+                feed.entry[0].cell.input_value == 'honoka' and
+                feed.entry[1].cell.row == '1' and
+                feed.entry[1].cell.col == '2' and
+                feed.entry[1].cell.input_value == 'eri' and
+                feed.entry[2].cell.row == '1' and
+                feed.entry[2].cell.col == '3' and
+                feed.entry[2].cell.input_value == 'kotori' and
+                feed.entry[3].cell.row == '1' and
+                feed.entry[3].cell.col == '4' and
+                feed.entry[3].cell.input_value == 'umi' and
+                feed.entry[4].cell.row == '1' and
+                feed.entry[4].cell.col == '5' and
+                feed.entry[4].cell.input_value == 'rin' and
+                feed.entry[5].cell.row == '2' and
+                feed.entry[5].cell.col == '1' and
+                feed.entry[5].cell.input_value == 'maki' and
+                feed.entry[6].cell.row == '2' and
+                feed.entry[6].cell.col == '2' and
+                feed.entry[6].cell.input_value == 'nozomi' and
+                feed.entry[7].cell.row == '2' and
+                feed.entry[7].cell.col == '3' and
+                feed.entry[7].cell.input_value == 'hanayo' and
+                feed.entry[8].cell.row == '2' and
+                feed.entry[8].cell.col == '4' and
+                feed.entry[8].cell.input_value == 'niko'),
+        force=True)
+
+    self.mox.ReplayAll()
+
+    self.worksheet[0][3:2] = []
+    self.worksheet[0][:] = ['honoka', 'eri', 'kotori', 'umi', 'rin']
+    self.worksheet[1][0:-1] = ['maki', 'nozomi', 'hanayo', 'niko']
+    self.assertRaises(
+        ValueError,
+        self.worksheet[1].__setitem__,
+        slice(None),
+        ['maki', 'nozomi', 'hanayo', 'niko'])
+    self.worksheet.commit()
+
   def test_write_nonstr(self):
     self.client.batch(
         mox.Func(
