@@ -45,9 +45,7 @@ gflags.MarkFlagAsRequired('client_secret')
 
 def load_sheet(path):
   with open(path, 'rb') as f:
-    dialect = csv.Sniffer().sniff(f.read(1024))
-    f.seek(0)
-    reader = csv.reader(f, dialect)
+    reader = csv.reader(f)
     return list(reader)
 
 
@@ -72,7 +70,7 @@ def upload_main(argv):
   with spreadsheet[0] as worksheet:
     for srow, trow in zip(sheet, worksheet):
       for i, value in enumerate(srow):
-        trow[i] = value
+        trow[i] = value.decode('utf-8')
 
   print spreadsheet.url
 
