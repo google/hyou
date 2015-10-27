@@ -152,14 +152,42 @@ class CustomMutableFixedListTest(unittest.TestCase):
     self.list = PseudoList(['apple', 'banana', 'cinamon', 'apple'])
 
   def test_ordering(self):
-    self.assertEqual(['apple', 'banana', 'cinamon', 'apple'], self.list)
-    self.assertNotEqual(['apple', 'banana', 'cinamon', 'lemon'], self.list)
-    self.assertNotEqual(['apple', 'banana', 'cinamon'], self.list)
-    self.assertLess(['apple', 'bacon', 'cinamon', 'apple'], self.list)
-    self.assertGreater(['apple', 'lemon', 'cinamon', 'apple'], self.list)
-    self.assertLess(['apple', 'banana', 'cinamon'], self.list)
-    self.assertGreater(
-        ['apple', 'banana', 'cinamon', 'apple', 'lemon'], self.list)
+    # __eq__
+    self.assertTrue(['apple', 'banana', 'cinamon', 'apple'] == self.list)
+    self.assertFalse(['apple', 'banana', 'cinamon', 'lemon'] == self.list)
+    self.assertFalse(['apple', 'banana', 'cinamon'] == self.list)
+    # __ne__
+    self.assertFalse(['apple', 'banana', 'cinamon', 'apple'] != self.list)
+    self.assertTrue(['apple', 'banana', 'cinamon', 'lemon'] != self.list)
+    self.assertTrue(['apple', 'banana', 'cinamon'] != self.list)
+    # __lt__
+    self.assertFalse(['apple', 'banana', 'cinamon', 'apple'] < self.list)
+    self.assertTrue(['apple', 'bacon', 'cinamon', 'apple'] < self.list)
+    self.assertFalse(['apple', 'lemon', 'cinamon', 'apple'] < self.list)
+    self.assertTrue(['apple', 'banana', 'cinamon'] < self.list)
+    self.assertFalse(
+        ['apple', 'banana', 'cinamon', 'apple', 'lemon'] < self.list)
+    # __le__
+    self.assertTrue(['apple', 'banana', 'cinamon', 'apple'] <= self.list)
+    self.assertTrue(['apple', 'bacon', 'cinamon', 'apple'] <= self.list)
+    self.assertFalse(['apple', 'lemon', 'cinamon', 'apple'] <= self.list)
+    self.assertTrue(['apple', 'banana', 'cinamon'] <= self.list)
+    self.assertFalse(
+        ['apple', 'banana', 'cinamon', 'apple', 'lemon'] <= self.list)
+    # __gt__
+    self.assertFalse(['apple', 'banana', 'cinamon', 'apple'] > self.list)
+    self.assertFalse(['apple', 'bacon', 'cinamon', 'apple'] > self.list)
+    self.assertTrue(['apple', 'lemon', 'cinamon', 'apple'] > self.list)
+    self.assertFalse(['apple', 'banana', 'cinamon'] > self.list)
+    self.assertTrue(
+        ['apple', 'banana', 'cinamon', 'apple', 'lemon'] > self.list)
+    # __ge__
+    self.assertTrue(['apple', 'banana', 'cinamon', 'apple'] >= self.list)
+    self.assertFalse(['apple', 'bacon', 'cinamon', 'apple'] >= self.list)
+    self.assertTrue(['apple', 'lemon', 'cinamon', 'apple'] >= self.list)
+    self.assertFalse(['apple', 'banana', 'cinamon'] >= self.list)
+    self.assertTrue(
+        ['apple', 'banana', 'cinamon', 'apple', 'lemon'] >= self.list)
 
   def test_contains(self):
     self.assertTrue('apple' in self.list)

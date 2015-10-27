@@ -106,7 +106,6 @@ class LazyOrderedDictionary(object):
       self._enumerated = True
 
 
-@functools.total_ordering
 class CustomMutableFixedList(object):
   """Provides methods to mimic a mutable fixed-size Python list.
 
@@ -125,11 +124,26 @@ class CustomMutableFixedList(object):
         return False
     return True
 
+  def __ne__(self, other):
+    return not (self == other)
+
   def __lt__(self, other):
     for a, b in itertools.izip(self, other):
       if a != b:
         return a < b
     return len(self) < len(other)
+
+  def __le__(self, other):
+    for a, b in itertools.izip(self, other):
+      if a != b:
+        return a < b
+    return len(self) <= len(other)
+
+  def __gt__(self, other):
+    return not (self <= other)
+
+  def __ge__(self, other):
+    return not (self < other)
 
   def __contains__(self, find_value):
     for value in self:
