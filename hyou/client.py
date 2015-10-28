@@ -48,7 +48,7 @@ class Collection(util.LazyOrderedDictionary):
   @classmethod
   def login(cls, json_path=None, json_text=None):
     if json_text is None:
-      with open(json_path, 'rb') as f:
+      with open(json_path, 'r') as f:
         json_text = f.read()
     json_data = json.loads(json_text)
     if '_module' in json_data:
