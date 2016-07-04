@@ -401,6 +401,10 @@ API Reference
 Changelog
 ---------
 
+2.1.1 (2016-07-04)
+
+- Support oauth2client v2.0.0+.
+
 2.1.0 (2015-10-28)
 
 - Worksheets emulate standard lists better.
