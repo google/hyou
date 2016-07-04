@@ -41,7 +41,7 @@ worksheet.commit()
 Documentation
 -------------
 
-Documentation is available at https://hyou.readthedocs.org/.
+Documentation is available at https://hyou.readthedocs.io/.
 
 
 Author
