@@ -24,6 +24,7 @@ import gdata.spreadsheets.client
 import gdata.spreadsheets.data
 import httplib2
 import oauth2client.client
+import oauth2client.service_account
 
 from . import util
 
@@ -54,10 +55,11 @@ class Collection(util.LazyOrderedDictionary):
     if '_module' in json_data:
       credentials = oauth2client.client.Credentials.new_from_json(json_text)
     elif 'private_key' in json_data:
-      credentials = oauth2client.client.SignedJwtAssertionCredentials(
-          service_account_name=json_data['client_email'],
-          private_key=json_data['private_key'],
-          scope=GOOGLE_SPREADSHEET_SCOPES)
+      credentials = (
+          oauth2client.service_account.ServiceAccountCredentials
+          .from_json_keyfile_dict(
+              json_data,
+              scopes=GOOGLE_SPREADSHEET_SCOPES))
     else:
       raise ValueError('unrecognized credential format')
     # Don't use auth_token= argument. It does not refresh tokens.
