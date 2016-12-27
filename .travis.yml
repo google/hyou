@@ -6,3 +6,6 @@ install:
   - pip install coveralls
 script: python setup.py nosetests
 after_success: coveralls
+branches:
+  except:
+    - /^v[0-9]/
