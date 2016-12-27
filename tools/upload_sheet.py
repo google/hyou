@@ -44,67 +44,67 @@ gflags.MarkFlagAsRequired('client_secret')
 
 
 def load_sheet(path):
-  with open(path, 'rb') as f:
-    reader = csv.reader(f)
-    return list(reader)
+    with open(path, 'rb') as f:
+        reader = csv.reader(f)
+        return list(reader)
 
 
 def upload_main(argv):
-  if len(argv) != 2:
-    return __doc__
+    if len(argv) != 2:
+        return __doc__
 
-  path = argv[1]
+    path = argv[1]
 
-  sheet = load_sheet(path)
+    sheet = load_sheet(path)
 
-  try:
-    collection = hyou.login(json_path=CREDENTIAL_PATH)
-  except Exception:
-    return ('Your credential is missing, expired or invalid.'
-            'Please authenticate again by --authenticate.')
+    try:
+        collection = hyou.login(json_path=CREDENTIAL_PATH)
+    except Exception:
+        return ('Your credential is missing, expired or invalid.'
+                'Please authenticate again by --authenticate.')
 
-  title = os.path.basename(path).decode('utf-8')
-  spreadsheet = collection.create_spreadsheet(
-      title, rows=len(sheet), cols=len(sheet[0]))
+    title = os.path.basename(path).decode('utf-8')
+    spreadsheet = collection.create_spreadsheet(
+        title, rows=len(sheet), cols=len(sheet[0]))
 
-  with spreadsheet[0] as worksheet:
-    for srow, trow in zip(sheet, worksheet):
-      for i, value in enumerate(srow):
-        trow[i] = value.decode('utf-8')
+    with spreadsheet[0] as worksheet:
+        for srow, trow in zip(sheet, worksheet):
+            for i, value in enumerate(srow):
+                trow[i] = value.decode('utf-8')
 
-  print spreadsheet.url
+    print spreadsheet.url
 
 
 def authenticate_main(argv):
-  flow = oauth2client.client.OAuth2WebServerFlow(
-      client_id=FLAGS.client_id,
-      client_secret=FLAGS.client_secret,
-      scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
-  url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
+    flow = oauth2client.client.OAuth2WebServerFlow(
+        client_id=FLAGS.client_id,
+        client_secret=FLAGS.client_secret,
+        scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
+    url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
-  print
-  print 'Please visit this URL to get the authorization code:'
-  print url
-  print
+    print
+    print 'Please visit this URL to get the authorization code:'
+    print url
+    print
 
-  code = raw_input('Code: ').strip()
+    code = raw_input('Code: ').strip()
 
-  credentials = flow.step2_exchange(code)
+    credentials = flow.step2_exchange(code)
 
-  with open(CREDENTIAL_PATH, 'w') as f:
-    os.fchmod(f.fileno(), 0600)
-    f.write(credentials.to_json())
+    with open(CREDENTIAL_PATH, 'w') as f:
+        os.fchmod(f.fileno(), 0600)
+        f.write(credentials.to_json())
 
-  print
-  print 'OK! Credentials were saved at %s' % CREDENTIAL_PATH
+    print
+    print 'OK! Credentials were saved at %s' % CREDENTIAL_PATH
 
 
 def main(argv):
-  if FLAGS.authenticate:
-    return authenticate_main(argv)
-  else:
-    return upload_main(argv)
+    if FLAGS.authenticate:
+        return authenticate_main(argv)
+    else:
+        return upload_main(argv)
 
 
 if __name__ == '__main__':
-  sys.exit(main(FLAGS(sys.argv)))
+    sys.exit(main(FLAGS(sys.argv)))

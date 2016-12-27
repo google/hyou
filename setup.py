@@ -15,9 +15,10 @@
 import os
 from setuptools import setup, Extension
 
+
 def read_file(name):
-  with open(os.path.join(os.path.dirname(__file__), name)) as f:
-    return f.read().strip()
+    with open(os.path.join(os.path.dirname(__file__), name)) as f:
+        return f.read().strip()
 
 setup(
     name='hyou',
@@ -38,7 +39,7 @@ setup(
         'mox>=0.5.3',
         'nose>=1.3.7',
     ],
-    classifiers = [
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.6',

@@ -39,35 +39,35 @@ gflags.MarkFlagAsRequired('client_secret')
 
 
 def main(argv):
-  if len(argv) != 2:
-    print 'usage: generate_oauth2_credentials.py OUTPUT_JSON_PATH'
-    return 1
-  output_json_path = argv[1]
+    if len(argv) != 2:
+        print 'usage: generate_oauth2_credentials.py OUTPUT_JSON_PATH'
+        return 1
+    output_json_path = argv[1]
 
-  flow = oauth2client.client.OAuth2WebServerFlow(
-      client_id=FLAGS.client_id,
-      client_secret=FLAGS.client_secret,
-      scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
-  url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
+    flow = oauth2client.client.OAuth2WebServerFlow(
+        client_id=FLAGS.client_id,
+        client_secret=FLAGS.client_secret,
+        scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
+    url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
-  print
-  print 'Please visit this URL to get the authorization code:'
-  print url
-  print
+    print
+    print 'Please visit this URL to get the authorization code:'
+    print url
+    print
 
-  code = raw_input('Code: ').strip()
+    code = raw_input('Code: ').strip()
 
-  credentials = flow.step2_exchange(code)
+    credentials = flow.step2_exchange(code)
 
-  with open(output_json_path, 'w') as f:
-    os.fchmod(f.fileno(), 0600)
-    f.write(credentials.to_json())
+    with open(output_json_path, 'w') as f:
+        os.fchmod(f.fileno(), 0600)
+        f.write(credentials.to_json())
 
-  print
-  print 'Credentials successfully saved to %s' % output_json_path
-  print
-  print 'WARNING: Keep it in a safe location! With the credentials, all your Google Drive documents can be accessed.'
+    print
+    print 'Credentials successfully saved to %s' % output_json_path
+    print
+    print 'WARNING: Keep it in a safe location! With the credentials, all your Google Drive documents can be accessed.'
 
 
 if __name__ == '__main__':
-  sys.exit(main(FLAGS(sys.argv)))
+    sys.exit(main(FLAGS(sys.argv)))
