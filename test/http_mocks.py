@@ -20,7 +20,6 @@ from builtins import (  # noqa: F401
 
 import hashlib
 import httplib2
-import io
 import json
 import logging
 import os
@@ -66,7 +65,7 @@ def _load_records():
     records = {}
     for filename in sorted(os.listdir(RECORDS_DIR)):
         record_path = os.path.join(RECORDS_DIR, filename)
-        with io.open(record_path, 'r', encoding='utf-8') as f:
+        with open(record_path, 'r', encoding='utf-8') as f:
             record = json.load(f)
             record['_path'] = record_path
             body_bytes = (
