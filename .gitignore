@@ -12,4 +12,5 @@
 .tox
 build/
 dist/
+docs/_build
 hyou.egg-info/

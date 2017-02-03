@@ -207,6 +207,12 @@ Each view has independent cache. Reading a cell of a view will fetch contained c
 API Reference
 -------------
 
+.. data:: SCOPES
+
+   A tuple of strings representing the scopes needed to access spreadsheets.
+   Use this constant to request OAuth2 credentials.
+
+
 .. function:: login(json_path=None, json_text=None)
 
    Logs in to Google Spreadsheet, and returns a new :py:class:`Collection` object.
@@ -228,7 +234,7 @@ API Reference
 
    This is a dictionary-like object, implementing several dictionary methods like
    :py:meth:`keys`, :py:meth:`values`, :py:meth:`items`,
-   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`, 
+   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`,
    :py:meth:`__len__`, :py:meth:`__iter__`.
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called).
 
@@ -257,7 +263,7 @@ API Reference
 
    This is a dictionary-like object, implementing several dictionary methods like
    :py:meth:`keys`, :py:meth:`values`, :py:meth:`items`,
-   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`, 
+   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`,
    :py:meth:`__len__`, :py:meth:`__iter__`.
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called), and elements are ordered.
 
