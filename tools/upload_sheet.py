@@ -33,7 +33,6 @@ import sys
 
 import gflags
 import hyou
-import hyou.client
 import oauth2client.client
 
 CREDENTIAL_PATH = os.path.join(os.environ['HOME'], '.hyou.credential.json')
@@ -87,7 +86,7 @@ def authenticate_main(argv):
     flow = oauth2client.client.OAuth2WebServerFlow(
         client_id=FLAGS.client_id,
         client_secret=FLAGS.client_secret,
-        scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
+        scope=hyou.SCOPES)
     url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
     print()

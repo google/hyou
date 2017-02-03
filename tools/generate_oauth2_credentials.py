@@ -32,8 +32,9 @@ from builtins import (  # noqa: F401
 import os
 import sys
 
+import future.utils
 import gflags
-import hyou.client
+import hyou
 import oauth2client.client
 
 FLAGS = gflags.FLAGS
@@ -58,7 +59,7 @@ def main(argv):
     flow = oauth2client.client.OAuth2WebServerFlow(
         client_id=FLAGS.client_id,
         client_secret=FLAGS.client_secret,
-        scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
+        scope=hyou.SCOPES)
     url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
     print()
@@ -70,9 +71,9 @@ def main(argv):
 
     credentials = flow.step2_exchange(code)
 
-    with open(output_json_path, 'w') as f:
+    with open(output_json_path, 'wb') as f:
         os.fchmod(f.fileno(), 0o600)
-        f.write(credentials.to_json())
+        f.write(future.utils.native_str_to_bytes(credentials.to_json()))
 
     print()
     print('Credentials successfully saved to %s' % output_json_path)

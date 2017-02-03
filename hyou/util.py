@@ -24,7 +24,7 @@ import oauth2client.client
 import oauth2client.service_account
 
 
-GOOGLE_SPREADSHEET_SCOPES = (
+SCOPES = (
     'https://spreadsheets.google.com/feeds',
     'https://www.googleapis.com/auth/drive',
 )
@@ -62,7 +62,7 @@ def parse_credentials(json_text):
             oauth2client.service_account.ServiceAccountCredentials
             .from_json_keyfile_dict(
                 json_data,
-                scopes=GOOGLE_SPREADSHEET_SCOPES))
+                scopes=SCOPES))
     raise ValueError('unrecognized credential format')
 
 

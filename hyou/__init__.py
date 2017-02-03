@@ -22,11 +22,13 @@ from .client import Collection  # noqa: F401
 from .client import Spreadsheet  # noqa: F401
 from .client import Worksheet  # noqa: F401
 from .client import WorksheetView  # noqa: F401
+from .util import SCOPES
 
 login = Collection.login
 
 __all__ = [
     'Collection',
+    'SCOPES',
     'Spreadsheet',
     'Worksheet',
     'WorksheetView',

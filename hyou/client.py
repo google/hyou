@@ -30,6 +30,9 @@ from . import util
 SHEETS_API_DISCOVERY_URL = (
     'https://sheets.googleapis.com/$discovery/rest?version=v4')
 
+# For compatibility.
+GOOGLE_SPREADSHEET_SCOPES = util.SCOPES
+
 
 class API(object):
 
