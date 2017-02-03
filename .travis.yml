@@ -3,7 +3,9 @@ python:
   - "2.7"
 install:
   - pip install tox tox-travis
-script: tox
+script:
+  - tox -e lint
+  - tox
 after_success: coveralls
 branches:
   except:
