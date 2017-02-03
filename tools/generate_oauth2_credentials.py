@@ -17,8 +17,17 @@
 """Performs OAuth2 Web Server Flow to obtain credentials.
 
 Usage:
-generate_oauth2_credentials.py [--client_id=CLIENT_ID --client_secret=CLIENT_SECRET] OUTPUT_JSON_PATH
+generate_oauth2_credentials.py
+     [--client_id=CLIENT_ID]
+     [--client_secret=CLIENT_SECRET]
+     OUTPUT_JSON_PATH
 """
+
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
 
 import os
 import sys
@@ -29,7 +38,9 @@ import oauth2client.client
 
 FLAGS = gflags.FLAGS
 
-TEST_CLIENT_ID = '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com'
+TEST_CLIENT_ID = (
+    '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.'
+    'apps.googleusercontent.com')
 TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 
 gflags.DEFINE_string('client_id', TEST_CLIENT_ID, '')
@@ -40,7 +51,7 @@ gflags.MarkFlagAsRequired('client_secret')
 
 def main(argv):
     if len(argv) != 2:
-        print 'usage: generate_oauth2_credentials.py OUTPUT_JSON_PATH'
+        print('usage: generate_oauth2_credentials.py OUTPUT_JSON_PATH')
         return 1
     output_json_path = argv[1]
 
@@ -50,23 +61,24 @@ def main(argv):
         scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
     url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
-    print
-    print 'Please visit this URL to get the authorization code:'
-    print url
-    print
+    print()
+    print('Please visit this URL to get the authorization code:')
+    print(url)
+    print()
 
-    code = raw_input('Code: ').strip()
+    code = input('Code: ').strip()
 
     credentials = flow.step2_exchange(code)
 
     with open(output_json_path, 'w') as f:
-        os.fchmod(f.fileno(), 0600)
+        os.fchmod(f.fileno(), 0o600)
         f.write(credentials.to_json())
 
-    print
-    print 'Credentials successfully saved to %s' % output_json_path
-    print
-    print 'WARNING: Keep it in a safe location! With the credentials, all your Google Drive documents can be accessed.'
+    print()
+    print('Credentials successfully saved to %s' % output_json_path)
+    print()
+    print('WARNING: Keep it in a safe location! With the credentials,')
+    print('         all your Google Drive documents can be accessed.')
 
 
 if __name__ == '__main__':

@@ -21,6 +21,12 @@ upload_sheet.py --authenticate
 upload_sheet.py <filename>
 """
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import csv
 import os
 import sys
@@ -31,7 +37,9 @@ import hyou.client
 import oauth2client.client
 
 CREDENTIAL_PATH = os.path.join(os.environ['HOME'], '.hyou.credential.json')
-TEST_CLIENT_ID = '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com'
+TEST_CLIENT_ID = (
+    '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.'
+    'apps.googleusercontent.com')
 TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 
 FLAGS = gflags.FLAGS
@@ -72,7 +80,7 @@ def upload_main(argv):
             for i, value in enumerate(srow):
                 trow[i] = value.decode('utf-8')
 
-    print spreadsheet.url
+    print(spreadsheet.url)
 
 
 def authenticate_main(argv):
@@ -82,21 +90,21 @@ def authenticate_main(argv):
         scope=hyou.client.GOOGLE_SPREADSHEET_SCOPES)
     url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
-    print
-    print 'Please visit this URL to get the authorization code:'
-    print url
-    print
+    print()
+    print('Please visit this URL to get the authorization code:')
+    print(url)
+    print()
 
-    code = raw_input('Code: ').strip()
+    code = input('Code: ').strip()
 
     credentials = flow.step2_exchange(code)
 
     with open(CREDENTIAL_PATH, 'w') as f:
-        os.fchmod(f.fileno(), 0600)
+        os.fchmod(f.fileno(), 0o600)
         f.write(credentials.to_json())
 
-    print
-    print 'OK! Credentials were saved at %s' % CREDENTIAL_PATH
+    print()
+    print('OK! Credentials were saved at %s' % CREDENTIAL_PATH)
 
 
 def main(argv):
