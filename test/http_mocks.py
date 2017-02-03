@@ -17,6 +17,8 @@ import httplib2
 import json
 import logging
 import os
+import urllib
+import urlparse
 
 import hyou.util
 
@@ -27,12 +29,19 @@ ENV_RECORD = os.environ.get('HYOU_TEST_RECORD')
 ENV_CREDENTIALS = os.environ.get('HYOU_TEST_CREDENTIALS')
 
 
+def _canonicalize_uri(uri):
+    scheme, netloc, path, params, query, fragment = urlparse.urlparse(uri)
+    if query:
+        query = urllib.urlencode(sorted(urlparse.parse_qsl(query)))
+    return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+
 def _canonicalize_json(data):
     return json.dumps(json.loads(data), sort_keys=True, separators=(',', ':'))
 
 
 def _build_signature(method, uri, body):
-    sig = '%s %s' % (method, uri)
+    sig = '%s %s' % (method, _canonicalize_uri(uri))
     if body is not None:
         sig += ' %s' % hashlib.sha1(_canonicalize_json(body)).hexdigest()
     return sig
