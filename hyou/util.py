@@ -13,6 +13,52 @@
 # limitations under the License.
 
 import itertools
+import json
+
+import oauth2client.client
+import oauth2client.service_account
+
+
+GOOGLE_SPREADSHEET_SCOPES = (
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/drive',
+)
+
+
+def format_column_address(index_column):
+    k = index_column
+    p = 1
+    while k >= 26 ** p:
+        k -= 26 ** p
+        p += 1
+    s = ''
+    for i in range(p):
+        s = chr(ord('A') + k % 26) + s
+    return s
+
+
+def format_range_a1_notation(
+        worksheet_title, start_row, end_row, start_col, end_col):
+    return '\'%s\'!%s%d:%s%d' % (
+        worksheet_title.replace('\'', '\'\''),
+        format_column_address(start_col),
+        start_row + 1,
+        format_column_address(end_col - 1),
+        end_row)
+
+
+def parse_credentials(json_text):
+    json_data = json.loads(json_text)
+    if '_module' in json_data:
+        return oauth2client.client.Credentials.new_from_json(
+            json_text)
+    elif 'private_key' in json_data:
+        return (
+            oauth2client.service_account.ServiceAccountCredentials
+            .from_json_keyfile_dict(
+                json_data,
+                scopes=GOOGLE_SPREADSHEET_SCOPES))
+    raise ValueError('unrecognized credential format')
 
 
 class LazyOrderedDictionary(object):
@@ -42,14 +88,14 @@ class LazyOrderedDictionary(object):
             yield key
 
     def itervalues(self):
-        self._ensure_enumerated()
-        for _, value in self._cache_list:
+        for _, value in self.iteritems():
             yield value
 
     def iteritems(self):
         self._ensure_enumerated()
-        for item in self._cache_list:
-            yield item
+        for i, (key, _) in enumerate(self._cache_list):
+            value = self._get_value(i)
+            yield (key, value)
 
     def keys(self):
         return list(self.iterkeys())
@@ -63,10 +109,10 @@ class LazyOrderedDictionary(object):
     def __getitem__(self, key):
         if isinstance(key, int):
             self._ensure_enumerated()
-            return self._cache_list[key][1]
+            return self._get_value(key)
         index = self._cache_index.get(key)
         if index is not None:
-            return self._cache_list[index][1]
+            return self._get_value(index)
         if self._constructor:
             value = self._constructor(key)
             if value is not None:
@@ -78,7 +124,7 @@ class LazyOrderedDictionary(object):
         index = self._cache_index.get(key)
         if index is None:
             raise KeyError(key)
-        return self._cache_list[index][1]
+        return self._get_value(index)
 
     def get(self, key, default=None):
         try:
@@ -104,6 +150,14 @@ class LazyOrderedDictionary(object):
                     self._cache_list.append((None, None))
                 self._cache_list[index] = (key, value)
             self._enumerated = True
+
+    def _get_value(self, index):
+        key, value = self._cache_list[index]
+        if value is None:
+            value = self._constructor(key)
+            assert value is not None
+            self._cache_list[index] = (key, value)
+        return value
 
 
 class CustomMutableFixedList(object):

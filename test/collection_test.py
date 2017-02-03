@@ -16,141 +16,73 @@ import os
 import unittest
 
 import apiclient.discovery
-import gdata.spreadsheets.client
-import mox
+import apiclient.http
 
 import hyou.client
 
-
-class FakeSpreadsheetFeed(object):
-
-    def __init__(self, key):
-        self._key = key
-
-    def get_spreadsheet_key(self):
-        return self._key
-
-
-class FakeSpreadsheetsFeed(object):
-
-    def __init__(self, entries):
-        self.entry = entries
+import http_mocks
 
 
 class CollectionTest(unittest.TestCase):
 
     def setUp(self):
-        self.mox = mox.Mox()
-        self.mox.StubOutClassWithMocks(hyou.client, 'Spreadsheet')
-        self.client = self.mox.CreateMock(
-            gdata.spreadsheets.client.SpreadsheetsClient)
-        self.drive = self.mox.CreateMockAnything()
-        self.collection = hyou.client.Collection(self.client, self.drive)
+        self.api = hyou.client.API(http_mocks.ReplayHttp())
+        self.collection = hyou.client.Collection(self.api)
 
-    def tearDown(self):
-        self.mox.UnsetStubs()
-        self.mox.VerifyAll()
-
-    def test_login_user(self):
-        self.mox.StubOutWithMock(apiclient.discovery, 'build')
-        apiclient.discovery.build('drive', 'v2', http=mox.IgnoreArg())
-
-        self.mox.ReplayAll()
-
-        json_path = os.path.join(os.path.dirname(__file__), 'test_user.json')
-        hyou.client.Collection.login(json_path)
-
-    def test_login_bot(self):
-        self.mox.StubOutWithMock(apiclient.discovery, 'build')
-        apiclient.discovery.build('drive', 'v2', http=mox.IgnoreArg())
-
-        self.mox.ReplayAll()
-
-        json_path = os.path.join(os.path.dirname(__file__), 'test_bot.json')
-        hyou.client.Collection.login(json_path)
-
-    def test_login_invalid(self):
-        json_path = os.path.join(
-            os.path.dirname(__file__), 'test_invalid.json')
-        self.assertRaises(ValueError, hyou.client.Collection.login, json_path)
+    def test_discovery(self):
+        pass
 
     def test_accessors_with_constructor(self):
-        banana_feed = FakeSpreadsheetFeed('banana')
-        self.client.get_feed(
-            hyou.client.SPREADSHEET_URL % 'banana',
-            desired_class=gdata.spreadsheets.data.Spreadsheet
-        ).AndReturn(banana_feed)
-        banana = hyou.client.Spreadsheet(
-            self.collection, self.client, self.drive, 'banana', banana_feed)
-        self.mox.ReplayAll()
-
         # Indexing by a key
-        self.assertEqual(banana, self.collection['banana'])
+        sp = self.collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
 
     def test_accessors_with_enumerator(self):
-        apple_feed = FakeSpreadsheetFeed('apple')
-        banana_feed = FakeSpreadsheetFeed('banana')
-        cinamon_feed = FakeSpreadsheetFeed('cinamon')
-        feed = FakeSpreadsheetsFeed([apple_feed, banana_feed, cinamon_feed])
-
-        self.client.get_spreadsheets().AndReturn(feed)
-        apple = hyou.client.Spreadsheet(
-            self.collection, self.client, self.drive, 'apple', apple_feed)
-        banana = hyou.client.Spreadsheet(
-            self.collection, self.client, self.drive, 'banana', banana_feed)
-        cinamon = hyou.client.Spreadsheet(
-            self.collection, self.client, self.drive, 'cinamon', cinamon_feed)
-
-        self.mox.ReplayAll()
-
         # iter()
         it = iter(self.collection)
-        self.assertEqual('apple', it.next())
-        self.assertEqual('banana', it.next())
-        self.assertEqual('cinamon', it.next())
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', it.next())
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', it.next())
         self.assertRaises(StopIteration, it.next)
         # len()
-        self.assertEqual(3, len(self.collection))
+        self.assertEqual(2, len(self.collection))
         # keys()
-        self.assertEqual(['apple', 'banana', 'cinamon'],
-                         self.collection.keys())
-        # values()
-        self.assertEqual([apple, banana, cinamon], self.collection.values())
-        # items()
         self.assertEqual(
-            [('apple', apple), ('banana', banana), ('cinamon', cinamon)],
-            self.collection.items())
+            ['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
+             '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc'],
+            self.collection.keys())
+        # values()
+        values = self.collection.values()
+        self.assertEqual(2, len(values))
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', values[0].key)
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', values[1].key)
+        # items()
+        items = self.collection.items()
+        self.assertEqual(2, len(items))
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', items[0][0])
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', items[0][1].key)
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', items[1][0])
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', items[1][1].key)
         # Indexing by an integer
-        self.assertEqual(apple, self.collection[0])
-        self.assertEqual(banana, self.collection[1])
-        self.assertEqual(cinamon, self.collection[2])
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
+            self.collection[0].key)
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc',
+            self.collection[1].key)
         # Indexing by a key
-        self.assertEqual(apple, self.collection['apple'])
-        self.assertEqual(banana, self.collection['banana'])
-        self.assertEqual(cinamon, self.collection['cinamon'])
+        self.assertEqual(
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
+            self.collection['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM'].key)
+        self.assertEqual(
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc',
+            self.collection['1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc'].key)
 
     def test_create_spreadsheet(self):
-        files = self.mox.CreateMockAnything()
-        self.drive.files().AndReturn(files)
-        executor = self.mox.CreateMockAnything()
-        files.insert(body={
-            'title': 'Cinamon',
-            'mimeType': 'application/vnd.google-apps.spreadsheet',
-        }).AndReturn(executor)
-        executor.execute().AndReturn({'id': 'cinamon'})
-
-        cinamon_feed = FakeSpreadsheetFeed('cinamon')
-        self.client.get_feed(
-            hyou.client.SPREADSHEET_URL % 'cinamon',
-            desired_class=gdata.spreadsheets.data.Spreadsheet
-        ).AndReturn(cinamon_feed)
-        cinamon = hyou.client.Spreadsheet(
-            self.collection, self.client, self.drive, 'cinamon', cinamon_feed)
-
-        worksheet = self.mox.CreateMockAnything()
-        cinamon[0].AndReturn(worksheet)
-        worksheet.set_size(2, 8)
-
-        self.mox.ReplayAll()
-
-        self.collection.create_spreadsheet('Cinamon', rows=2, cols=8)
+        self.collection.create_spreadsheet('Cinnamon', rows=2, cols=8)

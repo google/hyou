@@ -15,92 +15,22 @@
 import datetime
 import unittest
 
-import gdata.spreadsheets.client
 import mox
 
 import hyou.client
 
-
-class FakeSpreadsheetTitleFeed(object):
-
-    def __init__(self, title):
-        self.text = title
-
-
-class FakeSpreadsheetUpdatedFeed(object):
-
-    def __init__(self):
-        self.text = '2015-08-11T12:34:56.789Z'
-
-
-class FakeSpreadsheetFeed(object):
-
-    def __init__(self, title):
-        self.title = FakeSpreadsheetTitleFeed(title)
-        self.updated = FakeSpreadsheetUpdatedFeed()
-
-
-class FakeWorksheetFeed(object):
-
-    def __init__(self, key):
-        self._key = key
-
-    def get_worksheet_id(self):
-        return self._key
-
-
-class FakeWorksheetsFeed(object):
-
-    def __init__(self, entries):
-        self.entry = entries
+import http_mocks
 
 
 class SpreadsheetTest(unittest.TestCase):
 
     def setUp(self):
-        self.mox = mox.Mox()
-        self.mox.StubOutClassWithMocks(hyou.client, 'Worksheet')
-        self.client = self.mox.CreateMock(
-            gdata.spreadsheets.client.SpreadsheetsClient)
-        self.drive = self.mox.CreateMockAnything()
-        entry = FakeSpreadsheetFeed('Cinamon')
-        self.spreadsheet = hyou.client.Spreadsheet(
-            None, self.client, self.drive, 'cinamon', entry)
-
-    def tearDown(self):
-        self.mox.UnsetStubs()
-        self.mox.VerifyAll()
-
-    def set_enumerator_expectations(self):
-        sheet1_feed = FakeWorksheetFeed('s1')
-        sheet2_feed = FakeWorksheetFeed('s2')
-        sheet3_feed = FakeWorksheetFeed('s3')
-        feed = FakeWorksheetsFeed([sheet1_feed, sheet2_feed, sheet3_feed])
-
-        self.client.get_worksheets('cinamon').AndReturn(feed)
-        sheet1 = hyou.client.Worksheet(
-            self.spreadsheet, self.client, 's1', sheet1_feed)
-        sheet1.key = 's1'
-        sheet1.title = 'Sheet1'
-        sheet2 = hyou.client.Worksheet(
-            self.spreadsheet, self.client, 's2', sheet2_feed)
-        sheet2.key = 's2'
-        sheet2.title = 'Sheet2'
-        sheet3 = hyou.client.Worksheet(
-            self.spreadsheet, self.client, 's3', sheet3_feed)
-        sheet3.key = 's3'
-        sheet3.title = 'Sheet3'
-        return (sheet1, sheet2, sheet3)
-
-    def set_refresh_expectations(self):
-        self.client.get_feed(
-            hyou.client.SPREADSHEET_URL % 'cinamon',
-            desired_class=gdata.spreadsheets.data.Spreadsheet)
+        self.api = hyou.client.API(http_mocks.ReplayHttp())
+        self.collection = hyou.client.Collection(self.api)
+        self.spreadsheet = self.collection[
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
 
     def test_worksheet_accessors(self):
-        sheet1, sheet2, sheet3 = self.set_enumerator_expectations()
-        self.mox.ReplayAll()
-
         # iter()
         it = iter(self.spreadsheet)
         self.assertEqual('Sheet1', it.next())
@@ -113,72 +43,56 @@ class SpreadsheetTest(unittest.TestCase):
         self.assertEqual(['Sheet1', 'Sheet2', 'Sheet3'],
                          self.spreadsheet.keys())
         # values()
-        self.assertEqual([sheet1, sheet2, sheet3], self.spreadsheet.values())
+        values = self.spreadsheet.values()
+        self.assertEqual(3, len(values))
+        self.assertEqual('Sheet1', values[0].title)
+        self.assertEqual('Sheet2', values[1].title)
+        self.assertEqual('Sheet3', values[2].title)
         # items()
-        self.assertEqual(
-            [('Sheet1', sheet1), ('Sheet2', sheet2), ('Sheet3', sheet3)],
-            self.spreadsheet.items())
+        items = self.spreadsheet.items()
+        self.assertEqual(3, len(items))
+        self.assertEqual('Sheet1', items[0][0])
+        self.assertEqual('Sheet1', items[0][1].title)
+        self.assertEqual('Sheet2', items[1][0])
+        self.assertEqual('Sheet2', items[1][1].title)
+        self.assertEqual('Sheet3', items[2][0])
+        self.assertEqual('Sheet3', items[2][1].title)
         # Indexing by an integer
-        self.assertEqual(sheet1, self.spreadsheet[0])
-        self.assertEqual(sheet2, self.spreadsheet[1])
-        self.assertEqual(sheet3, self.spreadsheet[2])
+        self.assertEqual('Sheet1', self.spreadsheet[0].title)
+        self.assertEqual('Sheet2', self.spreadsheet[1].title)
+        self.assertEqual('Sheet3', self.spreadsheet[2].title)
         # Indexing by a key
-        self.assertEqual(sheet1, self.spreadsheet['Sheet1'])
-        self.assertEqual(sheet2, self.spreadsheet['Sheet2'])
-        self.assertEqual(sheet3, self.spreadsheet['Sheet3'])
+        self.assertEqual('Sheet1', self.spreadsheet['Sheet1'].title)
+        self.assertEqual('Sheet2', self.spreadsheet['Sheet2'].title)
+        self.assertEqual('Sheet3', self.spreadsheet['Sheet3'].title)
 
     def test_refresh(self):
-        self.set_refresh_expectations()
-
-        self.mox.ReplayAll()
-
         self.spreadsheet.refresh()
 
     def test_add_worksheet(self):
-        self.client.add_worksheet('cinamon', 'Sheet3', rows=2, cols=8)
-        self.set_refresh_expectations()
-        sheet1, sheet2, sheet3 = self.set_enumerator_expectations()
-
-        self.mox.ReplayAll()
-
-        self.assertEqual(
-            sheet3, self.spreadsheet.add_worksheet('Sheet3', rows=2, cols=8))
+        worksheet = self.spreadsheet.add_worksheet('Sheet4', rows=2, cols=8)
+        self.assertEqual('Sheet4', worksheet.title)
+        self.assertEqual(2, worksheet.rows)
+        self.assertEqual(8, worksheet.cols)
 
     def test_delete_worksheet(self):
-        self.set_enumerator_expectations()
-        self.client.delete(
-            gdata.spreadsheets.client.WORKSHEET_URL % ('cinamon', 's3'),
-            force=True)
-        self.set_refresh_expectations()
-
-        self.mox.ReplayAll()
-
         self.spreadsheet.delete_worksheet('Sheet3')
 
     def test_url(self):
         self.assertEqual(
-            'https://docs.google.com/spreadsheets/d/cinamon/edit',
+            'https://docs.google.com/spreadsheets/d/'
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc/edit',
             self.spreadsheet.url)
 
     def test_title(self):
-        self.assertEqual('Cinamon', self.spreadsheet.title)
+        self.assertEqual('Test Sheet', self.spreadsheet.title)
 
     def test_title_setter(self):
-        files = self.mox.CreateMockAnything()
-        self.drive.files().AndReturn(files)
-        executor = self.mox.CreateMockAnything()
-        files.update(fileId='cinamon', body={
-                     'title': 'Lemon'}).AndReturn(executor)
-        executor.execute().AndReturn({})
-        self.set_refresh_expectations()
-
-        self.mox.ReplayAll()
-
-        self.spreadsheet.title = 'Lemon'
+        self.spreadsheet.title = 'Yet Another Test Sheet'
 
     def test_updated(self):
         self.assertEqual(
             datetime.datetime(
-                year=2015, month=8, day=11, hour=12, minute=34, second=56,
-                microsecond=789000),
+                year=2017, month=2, day=3, hour=1, minute=25, second=31,
+                microsecond=49000),
             self.spreadsheet.updated)

@@ -18,117 +18,111 @@ import itertools
 import json
 
 import apiclient.discovery
-import apiclient.http
-import gdata.gauth
-import gdata.spreadsheets.client
-import gdata.spreadsheets.data
 import httplib2
-import oauth2client.client
-import oauth2client.service_account
 
 from . import util
 
 
-GOOGLE_SPREADSHEET_SCOPES = (
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/drive',
-)
+SHEETS_API_DISCOVERY_URL = (
+    'https://sheets.googleapis.com/$discovery/rest?version=v4')
 
-SPREADSHEET_URL = (
-    'https://spreadsheets.google.com/feeds/spreadsheets/private/full/%s')
+
+class API(object):
+
+    def __init__(self, http):
+        self.sheets = apiclient.discovery.build(
+            'sheets', 'v4', http=http,
+            discoveryServiceUrl=SHEETS_API_DISCOVERY_URL)
+        self.drive = apiclient.discovery.build('drive', 'v2', http=http)
 
 
 class Collection(util.LazyOrderedDictionary):
 
-    def __init__(self, client, drive):
+    def __init__(self, api):
         super(Collection, self).__init__(
             self._spreadsheet_enumerator,
             self._spreadsheet_constructor)
-        self.client = client
-        self.drive = drive
+        self._api = api
 
     @classmethod
     def login(cls, json_path=None, json_text=None):
         if json_text is None:
             with open(json_path, 'r') as f:
                 json_text = f.read()
-        json_data = json.loads(json_text)
-        if '_module' in json_data:
-            credentials = oauth2client.client.Credentials.new_from_json(
-                json_text)
-        elif 'private_key' in json_data:
-            credentials = (
-                oauth2client.service_account.ServiceAccountCredentials
-                .from_json_keyfile_dict(
-                    json_data,
-                    scopes=GOOGLE_SPREADSHEET_SCOPES))
-        else:
-            raise ValueError('unrecognized credential format')
-        # Don't use auth_token= argument. It does not refresh tokens.
-        client = gdata.spreadsheets.client.SpreadsheetsClient()
-        auth_http = httplib2.Http()
-        auth_token = gdata.gauth.OAuth2TokenFromCredentials(credentials)
-        auth_token.authorize(client)
-        auth_http = credentials.authorize(auth_http)
-        drive = apiclient.discovery.build('drive', 'v2', http=auth_http)
-        return cls(client, drive)
+        credentials = util.parse_credentials(json_text)
+        http = credentials.authorize(httplib2.Http())
+        return cls(API(http))
 
     def create_spreadsheet(self, title, rows=1000, cols=26):
         body = {
             'title': title,
             'mimeType': 'application/vnd.google-apps.spreadsheet',
         }
-        response = self.drive.files().insert(body=body).execute()
+        response = self._api.drive.files().insert(body=body).execute()
         key = response['id']
         self.refresh()
         spreadsheet = self[key]
-        if (rows, cols) != (1000, 26):
-            spreadsheet[0].set_size(rows, cols)
+        spreadsheet[0].set_size(rows, cols)
         return spreadsheet
 
     def _spreadsheet_enumerator(self):
-        feed = self.client.get_spreadsheets()
-        for entry in feed.entry:
-            key = entry.get_spreadsheet_key()
-            yield (key, Spreadsheet(self, self.client, self.drive, key, entry))
+        response = self._api.drive.files().list(
+            maxResults=1000,
+            q=('mimeType="application/vnd.google-apps.spreadsheet" and '
+               'trashed = false'),
+            fields='items/id').execute()
+        for item in response['items']:
+            key = item['id']
+            yield (key, None)
 
     def _spreadsheet_constructor(self, key):
-        # TODO: Upstream to gdata.
-        entry = self.client.get_feed(
-            SPREADSHEET_URL % key,
-            desired_class=gdata.spreadsheets.data.Spreadsheet)
-        key = entry.get_spreadsheet_key()
-        return Spreadsheet(self, self.client, self.drive, key, entry)
+        entry = self._api.sheets.spreadsheets().get(
+            spreadsheetId=key, includeGridData=False).execute()
+        return Spreadsheet(self._api, entry)
 
 
 class Spreadsheet(util.LazyOrderedDictionary):
 
-    def __init__(self, collection, client, drive, key, entry):
+    def __init__(self, api, entry):
         super(Spreadsheet, self).__init__(self._worksheet_enumerator, None)
-        self.collection = collection
-        self.client = client
-        self.drive = drive
-        self.key = key
+        self._api = api
         self._entry = entry
+        self._updated = None
 
-    def refresh(self):
+    def refresh(self, entry=None):
+        if entry is not None:
+            self._entry = entry
+        else:
+            self._entry = self._api.sheets.spreadsheets().get(
+                spreadsheetId=self.key, includeGridData=False).execute()
+        self._updated = None
         super(Spreadsheet, self).refresh()
-        # TODO: Upstream to gdata.
-        self._entry = self.client.get_feed(
-            SPREADSHEET_URL % self.key,
-            desired_class=gdata.spreadsheets.data.Spreadsheet)
 
     def add_worksheet(self, title, rows=1000, cols=26):
-        self.client.add_worksheet(self.key, title, rows=rows, cols=cols)
-        self.refresh()
+        new_entry = self._make_single_batch_request(
+            'addSheet',
+            {
+                'properties': {
+                    'title': title,
+                    'gridProperties': {
+                        'rowCount': rows,
+                        'columnCount': cols,
+                    },
+                },
+            })
+        self.refresh(new_entry)
         return self[title]
 
     def delete_worksheet(self, title):
         worksheet = self[title]
-        url = gdata.spreadsheets.client.WORKSHEET_URL % (
-            self.key, worksheet.key)
-        self.client.delete(url, force=True)
-        self.refresh()
+        new_entry = self._make_single_batch_request(
+            'deleteSheet',
+            {'sheetId': worksheet.key})
+        self.refresh(new_entry)
+
+    @property
+    def key(self):
+        return self._entry['spreadsheetId']
 
     @property
     def url(self):
@@ -136,32 +130,48 @@ class Spreadsheet(util.LazyOrderedDictionary):
 
     @property
     def title(self):
-        return self._entry.title.text
+        return self._entry['properties']['title']
 
     @title.setter
     def title(self, new_title):
-        body = {'title': new_title}
-        response = self.drive.files().update(fileId=self.key, body=body).execute()
-        self.refresh()
+        new_entry = self._make_single_batch_request(
+            'updateSpreadsheetProperties',
+            {
+                'properties': {
+                    'title': new_title,
+                },
+                'fields': 'title',
+            })
+        self.refresh(new_entry)
 
     @property
     def updated(self):
-        return datetime.datetime.strptime(
-            self._entry.updated.text, '%Y-%m-%dT%H:%M:%S.%fZ')
+        if not self._updated:
+            response = self._api.drive.files().get(fileId=self.key).execute()
+            self._updated = datetime.datetime.strptime(
+                response['modifiedDate'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        return self._updated
 
     def _worksheet_enumerator(self):
-        feed = self.client.get_worksheets(self.key)
-        for entry in feed.entry:
-            key = entry.get_worksheet_id()
-            worksheet = Worksheet(self, self.client, key, entry)
+        for sheet_entry in self._entry['sheets']:
+            worksheet = Worksheet(self, self._api, sheet_entry)
             yield (worksheet.title, worksheet)
+
+    def _make_single_batch_request(self, method, params):
+        request = {
+            'requests': [{method: params}],
+            'include_spreadsheet_in_response': True,
+        }
+        response = self._api.sheets.spreadsheets().batchUpdate(
+            spreadsheetId=self.key, body=request).execute()
+        return response['updatedSpreadsheet']
 
 
 class WorksheetView(object):
 
-    def __init__(self, worksheet, client, start_row, end_row, start_col, end_col):
-        self.worksheet = worksheet
-        self.client = client
+    def __init__(self, worksheet, api, start_row, end_row, start_col, end_col):
+        self._worksheet = worksheet
+        self._api = api
         self._reset_size(start_row, end_row, start_col, end_col)
         self._input_value_map = {}
         self._cells_fetched = False
@@ -184,30 +194,41 @@ class WorksheetView(object):
     def _ensure_cells_fetched(self):
         if self._cells_fetched:
             return
-        query = gdata.spreadsheets.client.CellQuery(
-            min_row=(self.start_row + 1),
-            max_row=self.end_row,
-            min_col=(self.start_col + 1),
-            max_col=self.end_col,
-            return_empty=False)
-        feed = self.client.get_cells(
-            self.worksheet.spreadsheet.key, self.worksheet.key, query=query)
+        response = self._api.sheets.spreadsheets().values().get(
+            spreadsheetId=self._worksheet._spreadsheet.key,
+            range=util.format_range_a1_notation(
+                self._worksheet.title, self.start_row, self.end_row,
+                self.start_col, self.end_col).encode('utf-8'),
+            majorDimension='ROWS',
+            valueRenderOption='FORMATTED_VALUE',
+            dateTimeRenderOption='FORMATTED_STRING').execute()
         self._input_value_map = {}
-        for entry in feed.entry:
-            cell = entry.cell
-            self._input_value_map.setdefault(
-                (int(cell.row) - 1, int(cell.col) - 1),
-                cell.input_value)
+        for i, row in enumerate(response['values']):
+            index_row = self.start_row + i
+            for j, value in enumerate(row):
+                index_col = self.start_col + j
+                self._input_value_map.setdefault((index_row, index_col), value)
         self._cells_fetched = True
 
     def commit(self):
         if not self._queued_updates:
             return
-        feed = gdata.spreadsheets.data.build_batch_cells_update(
-            self.worksheet.spreadsheet.key, self.worksheet.key)
-        for row, col, new_value in self._queued_updates:
-            feed.add_set_cell(row + 1, col + 1, new_value)
-        self.client.batch(feed, force=True)
+        request = {
+            'data': [
+                {
+                    'range': util.format_range_a1_notation(
+                        self._worksheet.title, row, row + 1, col, col + 1),
+                    'majorDimension': 'ROWS',
+                    'values': [[value]],
+                }
+                for row, col, value in self._queued_updates
+            ],
+            'valueInputOption': 'USER_ENTERED',
+            'includeValuesInResponse': False,
+        }
+        response = self._api.sheets.spreadsheets().values().batchUpdate(
+            spreadsheetId=self._worksheet._spreadsheet.key,
+            body=request).execute()
         del self._queued_updates[:]
 
     def __nonzero__(self):
@@ -270,7 +291,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             raise IndexError()
         if (self._row, col) not in self._view._input_value_map:
             self._view._ensure_cells_fetched()
-        return self._view._input_value_map.get((self._row, col), '')
+        return self._view._input_value_map.get((self._row, col), u'')
 
     def __setitem__(self, index, new_value):
         if isinstance(index, slice):
@@ -293,12 +314,12 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         if not (self._start_col <= col < self._end_col):
             raise IndexError()
         if new_value is None:
-            new_value = ''
+            new_value = u''
         elif isinstance(new_value, int):
-            new_value = '%d' % new_value
+            new_value = u'%d' % new_value
         elif isinstance(new_value, float):
             # Do best not to lose precision...
-            new_value = '%.20e' % new_value
+            new_value = u'%.20e' % new_value
         elif isinstance(new_value, str):
             # May raise UnicodeDecodeError.
             new_value.decode('ascii')
@@ -321,16 +342,25 @@ class WorksheetViewRow(util.CustomMutableFixedList):
 
 class Worksheet(WorksheetView):
 
-    def __init__(self, spreadsheet, client, key, entry):
-        self.spreadsheet = spreadsheet
-        self.client = client
-        self.key = key
+    def __init__(self, spreadsheet, api, entry):
+        self._spreadsheet = spreadsheet
+        self._api = api
         self._entry = entry
-        super(Worksheet, self).__init__(
-            self, client, 0, self.rows, 0, self.cols)
+        super(Worksheet, self).__init__(self, api, 0, self.rows, 0, self.cols)
 
-    def refresh(self):
-        self._entry = self.client.get_worksheet(self.spreadsheet.key, self.key)
+    def refresh(self, entry=None):
+        if entry is not None:
+            self._entry = entry
+        else:
+            spreadsheet_entry = self._api.sheets.spreadsheets().get(
+                spreadsheetId=self._spreadsheet.key,
+                includeGridData=False).execute()
+            for entry in spreadsheet_entry['sheets']:
+                if entry['properties']['sheetId'] == self.key:
+                    self._entry = entry
+                    break
+            else:
+                raise KeyError('Sheet has been removed')
         self._reset_size(0, self.rows, 0, self.cols)
         super(Worksheet, self).refresh()
 
@@ -348,49 +378,68 @@ class Worksheet(WorksheetView):
         if not (0 <= start_col <= end_col <= self.cols):
             raise IndexError()
         return WorksheetView(
-            self, self.client,
+            self, self._api,
             start_row=start_row, end_row=end_row,
             start_col=start_col, end_col=end_col)
 
     def set_size(self, rows, cols):
         assert isinstance(rows, int) and rows > 0
         assert isinstance(cols, int) and cols > 0
-        self._entry.row_count.text = str(rows)
-        self._entry.col_count.text = str(cols)
-        self._update()
+        new_entry = self._make_single_batch_request(
+            'updateSheetProperties',
+            {
+                'properties': {
+                    'sheetId': self.key,
+                    'gridProperties': {
+                        'rowCount': rows,
+                        'columnCount': cols,
+                    },
+                },
+                'fields': 'gridProperties(rowCount,columnCount)',
+            })
+        self.refresh(new_entry)
+
+    @property
+    def key(self):
+        return self._entry['properties']['sheetId']
 
     @property
     def title(self):
-        return self._entry.title.text
+        return self._entry['properties']['title']
 
     @title.setter
     def title(self, new_title):
-        self._entry.title.text = new_title
-        self._update()
+        new_entry = self._make_single_batch_request(
+            'updateSheetProperties',
+            {
+                'properties': {
+                    'sheetId': self.key,
+                    'title': new_title,
+                },
+                'fields': 'title',
+            })
+        self.refresh(new_entry)
 
     @property
     def rows(self):
-        return int(self._entry.row_count.text)
+        return self._entry['properties']['gridProperties']['rowCount']
 
     @rows.setter
     def rows(self, rows):
-        assert isinstance(rows, int) and rows > 0
-        self._entry.row_count.text = str(rows)
-        self._update()
+        self.set_size(rows, self.cols)
 
     @property
     def cols(self):
-        return int(self._entry.col_count.text)
+        return self._entry['properties']['gridProperties']['columnCount']
 
     @cols.setter
     def cols(self, cols):
-        assert isinstance(cols, int) and cols > 0
-        self._entry.col_count.text = str(cols)
-        self._update()
+        self.set_size(self.rows, cols)
 
-    def _update(self):
-        url = gdata.spreadsheets.client.WORKSHEET_URL % (
-            self.spreadsheet.key, self.key)
-        # TODO: Use returned entry to speed up
-        unused_entry = self.client.update(self._entry, uri=url, force=True)
-        self.refresh()
+    def _make_single_batch_request(self, method, params):
+        spreadsheet_entry = self._spreadsheet._make_single_batch_request(
+            method, params)
+        for entry in spreadsheet_entry['sheets']:
+            if entry['properties']['sheetId'] == self.key:
+                return entry
+        raise KeyError('Sheet has been removed')

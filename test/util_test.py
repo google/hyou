@@ -12,11 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import unittest
 
 import mox
 
 import hyou.util
+
+
+class CredentialsTest(unittest.TestCase):
+
+    def test_login_user(self):
+        json_path = os.path.join(
+            os.path.dirname(__file__), 'creds', 'test_user.json')
+        with open(json_path) as f:
+            hyou.util.parse_credentials(f.read())
+
+    def test_login_bot(self):
+        json_path = os.path.join(
+            os.path.dirname(__file__), 'creds', 'test_bot.json')
+        with open(json_path) as f:
+            hyou.util.parse_credentials(f.read())
+
+    def test_login_invalid(self):
+        json_path = os.path.join(
+            os.path.dirname(__file__), 'creds', 'test_invalid.json')
+        with open(json_path) as f:
+            self.assertRaises(ValueError, hyou.util.parse_credentials, f.read())
 
 
 class LazyOrderedDictionaryTest(unittest.TestCase):
