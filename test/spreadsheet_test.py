@@ -15,8 +15,6 @@
 import datetime
 import unittest
 
-import mox
-
 import hyou.client
 
 import http_mocks
