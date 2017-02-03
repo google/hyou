@@ -8,6 +8,7 @@
 *.swp
 .DS_Store
 
+.coverage
 build/
 dist/
 hyou.egg-info/
