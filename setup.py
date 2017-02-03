@@ -34,12 +34,7 @@ setup(
         'tools/upload_sheet.py',
     ],
     install_requires=read_file('requirements.txt').splitlines(),
-    tests_require=[
-        'coverage>=3.7.1',
-        'mox>=0.5.3',
-        'nose>=1.3.7',
-    ],
-    test_suite='nose.collector',
+    tests_require=read_file('requirements_dev.txt').splitlines(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
