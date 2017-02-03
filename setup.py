@@ -13,14 +13,15 @@
 # limitations under the License.
 
 import os
-from setuptools import setup, Extension
+import setuptools
 
 
 def read_file(name):
     with open(os.path.join(os.path.dirname(__file__), name)) as f:
         return f.read().strip()
 
-setup(
+
+setuptools.setup(
     name='hyou',
     version='2.1.1',
     author='Shuhei Takahashi',
