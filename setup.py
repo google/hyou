@@ -16,14 +16,15 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
-from setuptools import setup, Extension
+import setuptools
 
 
 def read_file(name):
     with open(os.path.join(os.path.dirname(__file__), name)) as f:
         return f.read().strip()
 
-setup(
+
+setuptools.setup(
     name='hyou',
     version='3.0.dev1',
     author='Shuhei Takahashi',
