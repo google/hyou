@@ -38,7 +38,8 @@ class CredentialsTest(unittest.TestCase):
         json_path = os.path.join(
             os.path.dirname(__file__), 'creds', 'test_invalid.json')
         with open(json_path) as f:
-            self.assertRaises(ValueError, hyou.util.parse_credentials, f.read())
+            self.assertRaises(
+                ValueError, hyou.util.parse_credentials, f.read())
 
 
 class LazyOrderedDictionaryTest(unittest.TestCase):

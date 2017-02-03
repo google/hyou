@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import datetime
-import itertools
-import json
 
 import apiclient.discovery
 import httplib2
@@ -226,7 +223,7 @@ class WorksheetView(object):
             'valueInputOption': 'USER_ENTERED',
             'includeValuesInResponse': False,
         }
-        response = self._api.sheets.spreadsheets().values().batchUpdate(
+        self._api.sheets.spreadsheets().values().batchUpdate(
             spreadsheetId=self._worksheet._spreadsheet.key,
             body=request).execute()
         del self._queued_updates[:]
@@ -303,7 +300,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
                 raise ValueError(
                     'Tried to assign %d values to %d element slice' %
                     (len(new_value), stop - start))
-            for i, new_value_one in itertools.izip(xrange(start, stop), new_value):
+            for i, new_value_one in zip(range(start, stop), new_value):
                 self[i] = new_value_one
             return
         assert isinstance(index, int)

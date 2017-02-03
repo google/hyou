@@ -119,7 +119,8 @@ class WorksheetTest(unittest.TestCase):
         self.worksheet[0][1] = 28.3
         self.worksheet[0][2] = 'kotori-chan'
         self.assertRaises(
-            UnicodeDecodeError, self.worksheet[0].__setitem__, 3, '\xe6\xb5\xb7')
+            UnicodeDecodeError, self.worksheet[0].__setitem__, 3,
+            '\xe6\xb5\xb7')
         self.worksheet[0][4] = 'nya'
         self.assertRaises(IndexError, self.worksheet[
                           0].__setitem__, 5, '(*8*)')
@@ -134,7 +135,8 @@ class WorksheetTest(unittest.TestCase):
         self.assertFalse(self.worksheet[0:0])
         self.assertFalse(self.worksheet[0][0:0])
         self.assertFalse(
-            self.worksheet.view(start_row=0, end_row=0, start_col=0, end_col=0))
+            self.worksheet.view(
+                start_row=0, end_row=0, start_col=0, end_col=0))
 
     def test_refresh(self):
         self.assertEqual('honoka', self.worksheet[0][0])

@@ -28,7 +28,7 @@ ENV_CREDENTIALS = os.environ.get('HYOU_TEST_CREDENTIALS')
 
 
 def _canonicalize_json(data):
-    return json.dumps(json.loads(data), sort_keys=True, separators=(',' ,':'))
+    return json.dumps(json.loads(data), sort_keys=True, separators=(',', ':'))
 
 
 def _build_signature(method, uri, body):

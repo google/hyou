@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import unittest
-
-import apiclient.discovery
-import apiclient.http
 
 import hyou.client
 
@@ -34,7 +30,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_accessors_with_constructor(self):
         # Indexing by a key
-        sp = self.collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
+        self.collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
 
     def test_accessors_with_enumerator(self):
         # iter()
@@ -79,10 +75,12 @@ class CollectionTest(unittest.TestCase):
         # Indexing by a key
         self.assertEqual(
             '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
-            self.collection['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM'].key)
+            self.collection['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM']
+            .key)
         self.assertEqual(
             '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc',
-            self.collection['1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc'].key)
+            self.collection['1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
+            .key)
 
     def test_create_spreadsheet(self):
         self.collection.create_spreadsheet('Cinnamon', rows=2, cols=8)
