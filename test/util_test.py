@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import os
 import unittest
 
-import mox
+import mock
 
 import hyou.util
 
@@ -45,27 +51,20 @@ class CredentialsTest(unittest.TestCase):
 class LazyOrderedDictionaryTest(unittest.TestCase):
 
     def setUp(self):
-        self.mox = mox.Mox()
-        self.enumerator = self.mox.CreateMockAnything()
-        self.constructor = self.mox.CreateMockAnything()
+        self.enumerator = mock.Mock()
+        self.constructor = mock.Mock()
         self.dict = hyou.util.LazyOrderedDictionary(
             enumerator=self.enumerator, constructor=self.constructor)
 
-    def tearDown(self):
-        self.mox.UnsetStubs()
-        self.mox.VerifyAll()
-
     def test_enumerate(self):
-        self.enumerator().AndReturn(
-            [('A', 'apple'), ('B', 'banana'), ('C', 'cinamon')])
-        self.mox.ReplayAll()
-
+        self.enumerator.return_value = [
+            ('A', 'apple'), ('B', 'banana'), ('C', 'cinamon')]
         # iter()
         it = iter(self.dict)
-        self.assertEqual('A', it.next())
-        self.assertEqual('B', it.next())
-        self.assertEqual('C', it.next())
-        self.assertRaises(StopIteration, it.next)
+        self.assertEqual('A', next(it))
+        self.assertEqual('B', next(it))
+        self.assertEqual('C', next(it))
+        self.assertRaises(StopIteration, next, it)
         # len()
         self.assertEqual(3, len(self.dict))
         # keys()
@@ -86,15 +85,11 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
         self.assertEqual('cinamon', self.dict['C'])
 
     def test_construct(self):
-        self.constructor('A').AndReturn('apple')
-        self.mox.ReplayAll()
+        self.constructor.return_value = 'apple'
         self.assertEqual('apple', self.dict['A'])
 
     def test_refresh(self):
-        self.constructor('A').AndReturn('apple1')
-        self.constructor('A').AndReturn('apple2')
-        self.mox.ReplayAll()
-
+        self.constructor.side_effect = ['apple1', 'apple2']
         self.dict.refresh()
         self.assertEqual('apple1', self.dict['A'])
         self.assertEqual('apple1', self.dict['A'])
@@ -104,20 +99,16 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
         self.dict.refresh()
 
     def test_construct_then_enumerate(self):
-        self.constructor('B').AndReturn('bacon')
-        self.enumerator().AndReturn(
-            [('A', 'apple'), ('B', 'banana'), ('C', 'cinamon')])
-        self.mox.ReplayAll()
-
+        self.constructor.return_value = 'bacon'
+        self.enumerator.return_value = [
+            ('A', 'apple'), ('B', 'banana'), ('C', 'cinamon')]
         self.assertEqual('bacon', self.dict['B'])
         self.assertEqual(['A', 'B', 'C'], self.dict.keys())
         self.assertEqual(['apple', 'bacon', 'cinamon'], self.dict.values())
 
     def test_enumerate_then_construct_unlisted(self):
-        self.enumerator().AndReturn([('A', 'apple'), ('C', 'cinamon')])
-        self.constructor('B').AndReturn('banana')
-        self.mox.ReplayAll()
-
+        self.enumerator.return_value = [('A', 'apple'), ('C', 'cinamon')]
+        self.constructor.return_value = 'banana'
         self.assertEqual(['A', 'C'], self.dict.keys())
         self.assertEqual(['apple', 'cinamon'], self.dict.values())
         self.assertEqual('banana', self.dict['B'])
@@ -125,30 +116,25 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
         self.assertEqual(['apple', 'cinamon', 'banana'], self.dict.values())
 
     def test_construct_then_enumerate_unlisted(self):
-        self.constructor('B').AndReturn('banana')
-        self.enumerator().AndReturn([('A', 'apple'), ('C', 'cinamon')])
-        self.mox.ReplayAll()
-
+        self.constructor.return_value = 'banana'
+        self.enumerator.return_value = [('A', 'apple'), ('C', 'cinamon')]
         self.assertEqual('banana', self.dict['B'])
         self.assertEqual(['A', 'C', 'B'], self.dict.keys())
         self.assertEqual(['apple', 'cinamon', 'banana'], self.dict.values())
 
     def test_no_constructor_indexing(self):
-        self.constructor('A').AndReturn(None)
-        self.enumerator().AndReturn([('A', 'apple')])
-        self.mox.ReplayAll()
+        self.constructor.return_value = None
+        self.enumerator.return_value = [('A', 'apple')]
         self.assertEqual('apple', self.dict['A'])
 
     def test_no_constructor_indexing_miss(self):
-        self.constructor('A').AndReturn(None)
-        self.enumerator().AndReturn([('B', 'banana')])
-        self.mox.ReplayAll()
+        self.constructor.return_value = None
+        self.enumerator.return_value = [('B', 'banana')]
         self.assertRaises(KeyError, self.dict.__getitem__, 'A')
 
     def test_get(self):
-        self.enumerator().AndReturn([('A', 'apple')])
-        self.constructor('B').AndReturn(None)
-        self.mox.ReplayAll()
+        self.enumerator.return_value = [('A', 'apple')]
+        self.constructor.return_value = None
         list(self.dict)
         self.assertEqual('apple', self.dict.get('A', 'missing'))
         self.assertEqual('missing', self.dict.get('B', 'missing'))

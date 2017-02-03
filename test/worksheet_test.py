@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import unittest
 
 import hyou.client
@@ -120,7 +126,7 @@ class WorksheetTest(unittest.TestCase):
         self.worksheet[0][2] = 'kotori-chan'
         self.assertRaises(
             UnicodeDecodeError, self.worksheet[0].__setitem__, 3,
-            '\xe6\xb5\xb7')
+            b'\xe6\xb5\xb7')
         self.worksheet[0][4] = 'nya'
         self.assertRaises(IndexError, self.worksheet[
                           0].__setitem__, 5, '(*8*)')
@@ -184,14 +190,14 @@ class WorksheetTest(unittest.TestCase):
 
     def test_iter(self):
         it = iter(self.worksheet)
-        self.assertEqual(['honoka', 'eri', 'kotori', 'umi', 'rin'], it.next())
-        self.assertEqual(['maki', 'nozomi', 'hanayo', 'niko', ''], it.next())
-        self.assertRaises(StopIteration, it.next)
+        self.assertEqual(['honoka', 'eri', 'kotori', 'umi', 'rin'], next(it))
+        self.assertEqual(['maki', 'nozomi', 'hanayo', 'niko', ''], next(it))
+        self.assertRaises(StopIteration, next, it)
 
     def test_repr(self):
         self.assertEqual(
-            repr([[u'honoka', u'eri', u'kotori', u'umi', u'rin'],
-                  [u'maki', u'nozomi', u'hanayo', u'niko', u'']]),
+            repr([['honoka', 'eri', 'kotori', 'umi', 'rin'],
+                  ['maki', 'nozomi', 'hanayo', 'niko', '']]),
             repr(self.worksheet))
 
     def test_view(self):

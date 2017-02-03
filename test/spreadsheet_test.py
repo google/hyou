@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import datetime
 import unittest
 
@@ -31,10 +37,10 @@ class SpreadsheetTest(unittest.TestCase):
     def test_worksheet_accessors(self):
         # iter()
         it = iter(self.spreadsheet)
-        self.assertEqual('Sheet1', it.next())
-        self.assertEqual('Sheet2', it.next())
-        self.assertEqual('Sheet3', it.next())
-        self.assertRaises(StopIteration, it.next)
+        self.assertEqual('Sheet1', next(it))
+        self.assertEqual('Sheet2', next(it))
+        self.assertEqual('Sheet3', next(it))
+        self.assertRaises(StopIteration, next, it)
         # len()
         self.assertEqual(3, len(self.spreadsheet))
         # keys()

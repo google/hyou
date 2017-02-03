@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import itertools
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import json
 
 import oauth2client.client
@@ -173,7 +178,7 @@ class CustomMutableFixedList(object):
     def __eq__(self, other):
         if len(self) != len(other):
             return False
-        for a, b in itertools.izip(self, other):
+        for a, b in zip(self, other):
             if a != b:
                 return False
         return True
@@ -182,13 +187,13 @@ class CustomMutableFixedList(object):
         return not (self == other)
 
     def __lt__(self, other):
-        for a, b in itertools.izip(self, other):
+        for a, b in zip(self, other):
             if a != b:
                 return a < b
         return len(self) < len(other)
 
     def __le__(self, other):
-        for a, b in itertools.izip(self, other):
+        for a, b in zip(self, other):
             if a != b:
                 return a < b
         return len(self) <= len(other)
@@ -222,9 +227,9 @@ class CustomMutableFixedList(object):
         for i, new_value in enumerate(list(reversed(self))):
             self[i] = new_value
 
-    def sort(self, cmp=None, key=None, reverse=False):
+    def sort(self, key=None, reverse=False):
         for i, new_value in enumerate(sorted(
-                self, cmp=cmp, key=key, reverse=reverse)):
+                self, key=key, reverse=reverse)):
             self[i] = new_value
 
     def __delitem__(self, key):

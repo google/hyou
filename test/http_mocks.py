@@ -12,13 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import hashlib
 import httplib2
+import io
 import json
 import logging
 import os
-import urllib
-import urlparse
+
+from future.moves.urllib import parse
 
 import hyou.util
 
@@ -30,14 +37,22 @@ ENV_CREDENTIALS = os.environ.get('HYOU_TEST_CREDENTIALS')
 
 
 def _canonicalize_uri(uri):
-    scheme, netloc, path, params, query, fragment = urlparse.urlparse(uri)
+    scheme, netloc, path, params, query, fragment = parse.urlparse(uri)
     if query:
-        query = urllib.urlencode(sorted(urlparse.parse_qsl(query)))
-    return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+        query = parse.urlencode(sorted(parse.parse_qsl(query)))
+    return parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
 
-def _canonicalize_json(data):
-    return json.dumps(json.loads(data), sort_keys=True, separators=(',', ':'))
+def _canonicalize_json(body_json):
+    # body_json can be bytes or str.
+    if isinstance(body_json, str):
+        json_str = body_json
+    else:
+        json_str = body_json.decode('utf-8')
+    json_data = json.loads(json_str)
+    canonicalized_json_binary = json.dumps(
+        json_data, sort_keys=True, separators=(',', ':')).encode('utf-8')
+    return canonicalized_json_binary
 
 
 def _build_signature(method, uri, body):
@@ -51,7 +66,7 @@ def _load_records():
     records = {}
     for filename in sorted(os.listdir(RECORDS_DIR)):
         record_path = os.path.join(RECORDS_DIR, filename)
-        with open(record_path) as f:
+        with io.open(record_path, 'r', encoding='utf-8') as f:
             record = json.load(f)
             record['_path'] = record_path
             body_bytes = (
@@ -99,6 +114,10 @@ class ReplayHttp(object):
             return (_make_ok_response(), response_body)
 
         if ENV_RECORD != '1':
+            logging.error('Response not available!')
+            logging.error('Requested: %s', sig)
+            for s in sorted(self._records.keys()):
+                logging.error('Candidate: %s', s)
             raise Exception(
                 'Response not available; run unit tests with '
                 'HYOU_TEST_RECORD=1.')

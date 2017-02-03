@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import unittest
 
 import hyou.client
@@ -36,10 +42,10 @@ class CollectionTest(unittest.TestCase):
         # iter()
         it = iter(self.collection)
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', it.next())
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', next(it))
         self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', it.next())
-        self.assertRaises(StopIteration, it.next)
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', next(it))
+        self.assertRaises(StopIteration, next, it)
         # len()
         self.assertEqual(2, len(self.collection))
         # keys()

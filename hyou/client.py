@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals)
+from builtins import (  # noqa: F401
+    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
+    object, oct, open, pow, range, round, str, super, zip)
+
 import datetime
 
 import apiclient.discovery
+import future.utils
 import httplib2
 
 from . import util
@@ -186,16 +193,17 @@ class WorksheetView(object):
         self.end_col = end_col
         self._view_rows = [
             WorksheetViewRow(self, row, start_col, end_col)
-            for row in xrange(start_row, end_row)]
+            for row in range(start_row, end_row)]
 
     def _ensure_cells_fetched(self):
         if self._cells_fetched:
             return
+        range_str = util.format_range_a1_notation(
+            self._worksheet.title, self.start_row, self.end_row,
+            self.start_col, self.end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
-            range=util.format_range_a1_notation(
-                self._worksheet.title, self.start_row, self.end_row,
-                self.start_col, self.end_col).encode('utf-8'),
+            range=future.utils.text_to_native_str(range_str, encoding='utf-8'),
             majorDimension='ROWS',
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
@@ -288,7 +296,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             raise IndexError()
         if (self._row, col) not in self._view._input_value_map:
             self._view._ensure_cells_fetched()
-        return self._view._input_value_map.get((self._row, col), u'')
+        return self._view._input_value_map.get((self._row, col), '')
 
     def __setitem__(self, index, new_value):
         if isinstance(index, slice):
@@ -311,17 +319,17 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         if not (self._start_col <= col < self._end_col):
             raise IndexError()
         if new_value is None:
-            new_value = u''
+            new_value = ''
         elif isinstance(new_value, int):
-            new_value = u'%d' % new_value
+            new_value = '%d' % new_value
         elif isinstance(new_value, float):
             # Do best not to lose precision...
-            new_value = u'%.20e' % new_value
-        elif isinstance(new_value, str):
+            new_value = '%.20e' % new_value
+        elif isinstance(new_value, bytes):
             # May raise UnicodeDecodeError.
-            new_value.decode('ascii')
-        elif not isinstance(new_value, unicode):
-            new_value = unicode(new_value)
+            new_value = new_value.decode('ascii')
+        elif not isinstance(new_value, str):
+            new_value = str(new_value)
         self._view._input_value_map[(self._row, col)] = new_value
         self._view._queued_updates.append((self._row, col, new_value))
 
@@ -330,11 +338,11 @@ class WorksheetViewRow(util.CustomMutableFixedList):
 
     def __iter__(self):
         self._view._ensure_cells_fetched()
-        for col in xrange(self._start_col, self._end_col):
+        for col in range(self._start_col, self._end_col):
             yield self._view._input_value_map.get((self._row, col), '')
 
     def __repr__(self):
-        return repr([self[i] for i in xrange(len(self))])
+        return repr([self[i] for i in range(len(self))])
 
 
 class Worksheet(WorksheetView):
