@@ -7,7 +7,9 @@ python:
   - "3.6"
 install:
   - pip install tox tox-travis
-script: tox
+script:
+  - tox -e lint
+  - tox
 after_success: coveralls
 branches:
   except:
