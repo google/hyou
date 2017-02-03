@@ -39,6 +39,7 @@ setup(
         'mox>=0.5.3',
         'nose>=1.3.7',
     ],
+    test_suite='nose.collector',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
