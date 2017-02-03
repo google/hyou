@@ -64,6 +64,14 @@ def _make_ok_response():
 
 class ReplayHttp(object):
 
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
     def __init__(self):
         self._real_http = httplib2.Http()
         if ENV_CREDENTIALS:

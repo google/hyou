@@ -22,7 +22,7 @@ import http_mocks
 class CollectionTest(unittest.TestCase):
 
     def setUp(self):
-        self.api = hyou.client.API(http_mocks.ReplayHttp())
+        self.api = hyou.client.API(http_mocks.ReplayHttp.get_instance())
         self.collection = hyou.client.Collection(self.api)
 
     def test_discovery(self):
