@@ -9,6 +9,7 @@
 .DS_Store
 
 .coverage
+.tox
 build/
 dist/
 hyou.egg-info/
