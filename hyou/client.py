@@ -20,8 +20,8 @@ from builtins import (  # noqa: F401
 
 import datetime
 
-import apiclient.discovery
 import future.utils
+import googleapiclient.discovery
 import httplib2
 
 from . import util
@@ -37,10 +37,10 @@ GOOGLE_SPREADSHEET_SCOPES = util.SCOPES
 class API(object):
 
     def __init__(self, http):
-        self.sheets = apiclient.discovery.build(
+        self.sheets = googleapiclient.discovery.build(
             'sheets', 'v4', http=http,
             discoveryServiceUrl=SHEETS_API_DISCOVERY_URL)
-        self.drive = apiclient.discovery.build('drive', 'v2', http=http)
+        self.drive = googleapiclient.discovery.build('drive', 'v2', http=http)
 
 
 class Collection(util.LazyOrderedDictionary):
