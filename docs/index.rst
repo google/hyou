@@ -228,7 +228,7 @@ API Reference
 
    This is a dictionary-like object, implementing several dictionary methods like
    :py:meth:`keys`, :py:meth:`values`, :py:meth:`items`,
-   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`, 
+   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`,
    :py:meth:`__len__`, :py:meth:`__iter__`.
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called).
 
@@ -257,7 +257,7 @@ API Reference
 
    This is a dictionary-like object, implementing several dictionary methods like
    :py:meth:`keys`, :py:meth:`values`, :py:meth:`items`,
-   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`, 
+   :py:meth:`iterkeys`, :py:meth:`itervalues`, :py:meth:`iteritems`,
    :py:meth:`__len__`, :py:meth:`__iter__`.
    In contrast to usual :py:class:`dict`, it is immutable (unless :py:meth:`refresh` is called), and elements are ordered.
 
@@ -400,6 +400,12 @@ API Reference
 
 Changelog
 ---------
+
+2.1.2 (2017-04-21)
+
+- Dropped Python 2.6 support.
+- Disallow oauth2client 4.x to avoid warnings.
+- Follow PEP8 coding style.
 
 2.1.1 (2016-07-04)
 
