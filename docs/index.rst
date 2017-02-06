@@ -407,6 +407,12 @@ API Reference
 Changelog
 ---------
 
+3.0.0 (2017-02-XX)
+
+- Added Python 3.3+ support.
+- Dropped Python 2.6 support.
+- Switched to Sheets API v4.
+
 2.1.1 (2016-07-04)
 
 - Support oauth2client v2.0.0+.
