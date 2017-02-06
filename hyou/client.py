@@ -34,6 +34,10 @@ SHEETS_API_DISCOVERY_URL = (
 GOOGLE_SPREADSHEET_SCOPES = util.SCOPES
 
 
+def to_native_str(s):
+    return future.utils.text_to_native_str(s, encoding='utf-8')
+
+
 class API(object):
 
     def __init__(self, http):
@@ -95,6 +99,10 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self._api = api
         self._entry = entry
         self._updated = None
+
+    def __repr__(self):
+        return to_native_str(
+            '<%s key="%s">' % (self.__class__.__name__, self.key))
 
     def refresh(self, entry=None):
         if entry is not None:
@@ -206,7 +214,7 @@ class WorksheetView(object):
             self.start_col, self.end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
-            range=future.utils.text_to_native_str(range_str, encoding='utf-8'),
+            range=to_native_str(range_str),
             majorDimension='ROWS',
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
