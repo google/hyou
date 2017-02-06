@@ -84,19 +84,20 @@ class Collection(util.LazyOrderedDictionary):
             fields='items/id').execute()
         for item in response['items']:
             key = item['id']
-            yield (key, None)
+            yield (key, Spreadsheet(self._api, key, None))
 
     def _spreadsheet_constructor(self, key):
         entry = self._api.sheets.spreadsheets().get(
             spreadsheetId=key, includeGridData=False).execute()
-        return Spreadsheet(self._api, entry)
+        return Spreadsheet(self._api, entry['spreadsheetId'], entry)
 
 
 class Spreadsheet(util.LazyOrderedDictionary):
 
-    def __init__(self, api, entry):
+    def __init__(self, api, key, entry):
         super(Spreadsheet, self).__init__(self._worksheet_enumerator, None)
         self._api = api
+        self._key = key
         self._entry = entry
         self._updated = None
 
@@ -137,7 +138,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
 
     @property
     def key(self):
-        return self._entry['spreadsheetId']
+        return self._key
 
     @property
     def url(self):
@@ -145,6 +146,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
 
     @property
     def title(self):
+        self._ensure_entry()
         return self._entry['properties']['title']
 
     @title.setter
@@ -167,7 +169,12 @@ class Spreadsheet(util.LazyOrderedDictionary):
                 response['modifiedDate'], '%Y-%m-%dT%H:%M:%S.%fZ')
         return self._updated
 
+    def _ensure_entry(self):
+        if self._entry is None:
+            self.refresh()
+
     def _worksheet_enumerator(self):
+        self._ensure_entry()
         for sheet_entry in self._entry['sheets']:
             worksheet = Worksheet(self, self._api, sheet_entry)
             yield (worksheet.title, worksheet)

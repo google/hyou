@@ -98,8 +98,7 @@ class LazyOrderedDictionary(object):
 
     def iteritems(self):
         self._ensure_enumerated()
-        for i, (key, _) in enumerate(self._cache_list):
-            value = self._get_value(i)
+        for key, value in self._cache_list:
             yield (key, value)
 
     def keys(self):
@@ -114,22 +113,23 @@ class LazyOrderedDictionary(object):
     def __getitem__(self, key):
         if isinstance(key, int):
             self._ensure_enumerated()
-            return self._get_value(key)
+            return self._cache_list[key][1]
         index = self._cache_index.get(key)
         if index is not None:
-            return self._get_value(index)
+            return self._cache_list[index][1]
         if self._constructor:
             value = self._constructor(key)
-            if value is not None:
-                index = len(self._cache_list)
-                self._cache_index[key] = index
-                self._cache_list.append((key, value))
-                return value
+            if value is None:
+                raise KeyError(key)
+            index = len(self._cache_list)
+            self._cache_index[key] = index
+            self._cache_list.append((key, value))
+            return value
         self._ensure_enumerated()
         index = self._cache_index.get(key)
         if index is None:
             raise KeyError(key)
-        return self._get_value(index)
+        return self._cache_list[index][1]
 
     def get(self, key, default=None):
         try:
@@ -138,31 +138,24 @@ class LazyOrderedDictionary(object):
             return default
 
     def _ensure_enumerated(self):
-        if not self._enumerated:
-            # Save partially constructed entries.
-            saves = self._cache_list[:]
-            # Initialize cache with the enumerator.
-            del self._cache_list[:]
-            self._cache_index.clear()
-            for key, value in self._enumerator():
-                self._cache_index[key] = len(self._cache_list)
-                self._cache_list.append((key, value))
-            # Restore saved entries.
-            for key, value in saves:
-                index = self._cache_index.get(key)
-                if index is None:
-                    index = len(self._cache_list)
-                    self._cache_list.append((None, None))
-                self._cache_list[index] = (key, value)
-            self._enumerated = True
-
-    def _get_value(self, index):
-        key, value = self._cache_list[index]
-        if value is None:
-            value = self._constructor(key)
-            assert value is not None
+        if self._enumerated:
+            return
+        # Save partially constructed entries.
+        saves = self._cache_list[:]
+        # Initialize cache with the enumerator.
+        del self._cache_list[:]
+        self._cache_index.clear()
+        for key, value in self._enumerator():
+            self._cache_index[key] = len(self._cache_list)
+            self._cache_list.append((key, value))
+        # Restore saved entries.
+        for key, value in saves:
+            index = self._cache_index.get(key)
+            if index is None:
+                index = len(self._cache_list)
+                self._cache_list.append((None, None))
             self._cache_list[index] = (key, value)
-        return value
+        self._enumerated = True
 
 
 class CustomMutableFixedList(object):

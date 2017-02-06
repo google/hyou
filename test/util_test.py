@@ -123,8 +123,8 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
         self.assertEqual(['apple', 'cinamon', 'banana'], self.dict.values())
 
     def test_no_constructor_indexing(self):
-        self.constructor.return_value = None
-        self.enumerator.return_value = [('A', 'apple')]
+        self.constructor.return_value = 'apple'
+        self.enumerator.return_value = [('B', 'banana')]
         self.assertEqual('apple', self.dict['A'])
 
     def test_no_constructor_indexing_miss(self):
