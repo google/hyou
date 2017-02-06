@@ -14,14 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Performs OAuth2 Web Server Flow to obtain credentials.
-
-Usage:
-generate_oauth2_credentials.py
-     [--client_id=CLIENT_ID]
-     [--client_secret=CLIENT_SECRET]
-     OUTPUT_JSON_PATH
-"""
+"""Performs OAuth2 Web Server Flow to obtain credentials."""
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
@@ -29,36 +22,41 @@ from builtins import (  # noqa: F401
     ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
     object, oct, open, pow, range, round, str, super, zip)
 
+import argparse
 import os
 import sys
 
 import future.utils
-import gflags
 import hyou
 import oauth2client.client
-
-FLAGS = gflags.FLAGS
 
 TEST_CLIENT_ID = (
     '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.'
     'apps.googleusercontent.com')
 TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 
-gflags.DEFINE_string('client_id', TEST_CLIENT_ID, '')
-gflags.DEFINE_string('client_secret', TEST_CLIENT_SECRET, '')
-gflags.MarkFlagAsRequired('client_id')
-gflags.MarkFlagAsRequired('client_secret')
+
+def create_parser():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--client-id', type=str, default=TEST_CLIENT_ID,
+        help='OAuth2 client ID.')
+    parser.add_argument(
+        '--client-secret', type=str, default=TEST_CLIENT_SECRET,
+        help='OAuth2 client secret.')
+    parser.add_argument(
+        'output_json_path', type=str,
+        help='Output JSON path.')
+    return parser
 
 
 def main(argv):
-    if len(argv) != 2:
-        print('usage: generate_oauth2_credentials.py OUTPUT_JSON_PATH')
-        return 1
-    output_json_path = argv[1]
+    parser = create_parser()
+    opts = parser.parse_args(argv[1:])
 
     flow = oauth2client.client.OAuth2WebServerFlow(
-        client_id=FLAGS.client_id,
-        client_secret=FLAGS.client_secret,
+        client_id=opts.client_id,
+        client_secret=opts.client_secret,
         scope=hyou.SCOPES)
     url = flow.step1_get_authorize_url('urn:ietf:wg:oauth:2.0:oob')
 
@@ -71,16 +69,16 @@ def main(argv):
 
     credentials = flow.step2_exchange(code)
 
-    with open(output_json_path, 'wb') as f:
+    with open(opts.output_json_path, 'wb') as f:
         os.fchmod(f.fileno(), 0o600)
         f.write(future.utils.native_str_to_bytes(credentials.to_json()))
 
     print()
-    print('Credentials successfully saved to %s' % output_json_path)
+    print('Credentials successfully saved to %s' % opts.output_json_path)
     print()
     print('WARNING: Keep it in a safe location! With the credentials,')
     print('         all your Google Drive documents can be accessed.')
 
 
 if __name__ == '__main__':
-    sys.exit(main(FLAGS(sys.argv)))
+    sys.exit(main(sys.argv))
