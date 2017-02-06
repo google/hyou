@@ -16,6 +16,7 @@ from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
 import os
+
 import setuptools
 
 
@@ -26,7 +27,7 @@ def read_file(name):
 
 setuptools.setup(
     name='hyou',
-    version='3.0.dev1',
+    version='3.0b1',
     author='Shuhei Takahashi',
     author_email='nya@google.com',
     description='Pythonic Interface to access Google Spreadsheet',
