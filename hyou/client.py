@@ -226,7 +226,7 @@ class WorksheetView(object):
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
         self._input_value_map = {}
-        for i, row in enumerate(response['values']):
+        for i, row in enumerate(response.get('values', [])):
             index_row = self.start_row + i
             for j, value in enumerate(row):
                 index_col = self.start_col + j
