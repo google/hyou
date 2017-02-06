@@ -25,7 +25,7 @@ setuptools.setup(
     name='hyou',
     version='2.1.1',
     author='Shuhei Takahashi',
-    author_email='nya@google.com',
+    author_email='takahashi.shuhei@gmail.com',
     description='Pythonic Interface to access Google Spreadsheet',
     long_description=read_file('README.txt'),
     url='https://github.com/google/hyou/',
