@@ -28,8 +28,11 @@ import http_mocks
 
 class SpreadsheetTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.api = hyou.client.API(http_mocks.ReplayHttp())
+
     def setUp(self):
-        self.api = hyou.client.API(http_mocks.ReplayHttp.get_instance())
         self.collection = hyou.client.Collection(self.api)
         self.collection.keys()  # Fetch the list.
         self.spreadsheet = self.collection[

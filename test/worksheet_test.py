@@ -34,8 +34,11 @@ class Dummy(object):
 
 class WorksheetTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.api = hyou.client.API(http_mocks.ReplayHttp())
+
     def setUp(self):
-        self.api = hyou.client.API(http_mocks.ReplayHttp.get_instance())
         self.collection = hyou.client.Collection(self.api)
         self.spreadsheet = self.collection[
             '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
