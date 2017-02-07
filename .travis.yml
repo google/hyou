@@ -6,7 +6,7 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install tox tox-travis
+  - pip install tox tox-travis coveralls
 script:
   - tox -e lint
   - tox
