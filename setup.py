@@ -33,7 +33,7 @@ setuptools.setup(
     description='Pythonic Interface to access Google Spreadsheet',
     long_description=read_file('README.txt'),
     url='https://github.com/google/hyou/',
-    packages=['hyou'],
+    packages=['hyou', 'hyou.schema'],
     scripts=[
         'tools/generate_oauth2_credentials.py',
     ],
