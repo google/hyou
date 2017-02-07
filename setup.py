@@ -27,7 +27,7 @@ def read_file(name):
 
 setuptools.setup(
     name='hyou',
-    version='3.0b1',
+    version='3.0b2',
     author='Shuhei Takahashi',
     author_email='takahashi.shuhei@gmail.com',
     description='Pythonic Interface to access Google Spreadsheet',

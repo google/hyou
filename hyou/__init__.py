@@ -26,6 +26,8 @@ from .util import SCOPES
 
 login = Collection.login
 
+__version__ = '3.0b2'
+
 __all__ = [
     'Collection',
     'SCOPES',
