@@ -135,7 +135,7 @@ class ReplayHttp(object):
             'request': body,
             'response': response_body.decode('utf-8'),
         }
-        sig_hash = hashlib.sha1(sig).hexdigest()
+        sig_hash = hashlib.sha1(sig.encode('utf-8')).hexdigest()
         record_path = os.path.join(RECORDS_DIR, '%s.json' % sig_hash)
         with open(record_path, 'w') as f:
             json.dump(record, f)

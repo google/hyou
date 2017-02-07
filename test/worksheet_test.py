@@ -21,8 +21,15 @@ from builtins import (  # noqa: F401
 import unittest
 
 import hyou.client
+import hyou.util
 
 import http_mocks
+
+
+class Dummy(object):
+
+    def __str__(self):
+        return hyou.util.to_native_str('<dummy>')
 
 
 class WorksheetTest(unittest.TestCase):
@@ -128,8 +135,7 @@ class WorksheetTest(unittest.TestCase):
             UnicodeDecodeError, self.worksheet[0].__setitem__, 3,
             b'\xe6\xb5\xb7')
         self.worksheet[0][4] = 'nya'
-        self.assertRaises(IndexError, self.worksheet[
-                          0].__setitem__, 5, '(*8*)')
+        self.worksheet[1][0] = Dummy()
         self.worksheet[1][4] = None
         self.worksheet.commit()
 

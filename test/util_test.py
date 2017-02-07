@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # Copyright 2015 Google Inc. All rights reserved
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,12 +23,41 @@ from builtins import (  # noqa: F401
 import os
 import unittest
 
+import future.utils
 import mock
 
 import hyou.util
 
 
-class CredentialsTest(unittest.TestCase):
+class MiscUtilsTest(unittest.TestCase):
+
+    def test_to_native_str(self):
+        assert isinstance(
+            hyou.util.to_native_str('cat'), future.utils.native_str)
+        assert isinstance(
+            hyou.util.to_native_str('ねこ'), future.utils.native_str)
+
+    def test_format_column_address(self):
+        assert hyou.util.format_column_address(0) == 'A'
+        assert hyou.util.format_column_address(1) == 'B'
+        assert hyou.util.format_column_address(25) == 'Z'
+        assert hyou.util.format_column_address(26) == 'AA'
+        assert hyou.util.format_column_address(26 + 26 * 26 - 1) == 'ZZ'
+        assert hyou.util.format_column_address(26 + 26 * 26) == 'AAA'
+
+    def test_format_range_a1_notation(self):
+        assert (
+            hyou.util.format_range_a1_notation('test', 1, 5, 3, 7)
+            == "'test'!D2:G5")
+        assert (
+            hyou.util.format_range_a1_notation("cat's", 1, 5, 3, 7)
+            == "'cat''s'!D2:G5")
+        assert (
+            hyou.util.format_range_a1_notation("ねこ", 1, 5, 3, 7)
+            == "'ねこ'!D2:G5")
+
+
+class ParseCredentialsTest(unittest.TestCase):
 
     def test_login_user(self):
         json_path = os.path.join(
@@ -123,12 +154,14 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
         self.assertEqual(['apple', 'cinamon', 'banana'], self.dict.values())
 
     def test_no_constructor_indexing(self):
-        self.constructor.return_value = 'apple'
-        self.enumerator.return_value = [('B', 'banana')]
+        self.dict = hyou.util.LazyOrderedDictionary(
+            enumerator=self.enumerator, constructor=None)
+        self.enumerator.return_value = [('A', 'apple')]
         self.assertEqual('apple', self.dict['A'])
 
     def test_no_constructor_indexing_miss(self):
-        self.constructor.return_value = None
+        self.dict = hyou.util.LazyOrderedDictionary(
+            enumerator=self.enumerator, constructor=None)
         self.enumerator.return_value = [('B', 'banana')]
         self.assertRaises(KeyError, self.dict.__getitem__, 'A')
 

@@ -20,7 +20,6 @@ from builtins import (  # noqa: F401
 
 import datetime
 
-import future.utils
 import googleapiclient.discovery
 import httplib2
 
@@ -32,10 +31,6 @@ SHEETS_API_DISCOVERY_URL = (
 
 # For compatibility.
 GOOGLE_SPREADSHEET_SCOPES = util.SCOPES
-
-
-def to_native_str(s):
-    return future.utils.text_to_native_str(s, encoding='utf-8')
 
 
 class API(object):
@@ -102,8 +97,8 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self._updated = None
 
     def __repr__(self):
-        return to_native_str(
-            '<%s key="%s">' % (self.__class__.__name__, self.key))
+        return util.to_native_str(
+            '%s(key="%s")' % (self.__class__.__name__, self.key))
 
     def refresh(self, entry=None):
         if entry is not None:
@@ -221,7 +216,7 @@ class WorksheetView(object):
             self.start_col, self.end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
-            range=to_native_str(range_str),
+            range=util.to_native_str(range_str),
             majorDimension='ROWS',
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
@@ -254,8 +249,10 @@ class WorksheetView(object):
             body=request).execute()
         del self._queued_updates[:]
 
-    def __nonzero__(self):
+    def __bool__(self):
         return len(self) > 0
+
+    __nonzero__ = __bool__  # For Python 2
 
     def __getitem__(self, index):
         return self._view_rows[index]
@@ -292,9 +289,6 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         self._row = row
         self._start_col = start_col
         self._end_col = end_col
-
-    def __nonzero__(self):
-        return len(self) > 0
 
     def __getitem__(self, index):
         if isinstance(index, slice):
@@ -348,6 +342,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             new_value = new_value.decode('ascii')
         elif not isinstance(new_value, str):
             new_value = str(new_value)
+        assert isinstance(new_value, str)
         self._view._input_value_map[(self._row, col)] = new_value
         self._view._queued_updates.append((self._row, col, new_value))
 

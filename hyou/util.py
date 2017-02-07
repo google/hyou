@@ -20,6 +20,7 @@ from builtins import (  # noqa: F401
 
 import json
 
+import future.utils
 import oauth2client.client
 import oauth2client.service_account
 
@@ -28,6 +29,10 @@ SCOPES = (
     'https://spreadsheets.google.com/feeds',
     'https://www.googleapis.com/auth/drive',
 )
+
+
+def to_native_str(s):
+    return future.utils.text_to_native_str(s, encoding='utf-8')
 
 
 def format_column_address(index_column):
@@ -167,6 +172,11 @@ class CustomMutableFixedList(object):
     - __iter__
     - __len__
     """
+
+    def __bool__(self):
+        return len(self) > 0
+
+    __nonzero__ = __bool__  # For Python 2
 
     def __eq__(self, other):
         if len(self) != len(other):

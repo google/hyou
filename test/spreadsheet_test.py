@@ -31,8 +31,15 @@ class SpreadsheetTest(unittest.TestCase):
     def setUp(self):
         self.api = hyou.client.API(http_mocks.ReplayHttp.get_instance())
         self.collection = hyou.client.Collection(self.api)
+        self.collection.keys()  # Fetch the list.
         self.spreadsheet = self.collection[
             '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
+
+    def test_repr(self):
+        self.assertEqual(
+            str('Spreadsheet('
+                'key="1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc")'),
+            repr(self.spreadsheet))
 
     def test_worksheet_accessors(self):
         # iter()
