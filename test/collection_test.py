@@ -29,7 +29,7 @@ class CollectionTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(http_mocks.ReplayHttp())
+        cls.api = hyou.client.API(http_mocks.ReplayHttp(), discovery=False)
 
     def setUp(self):
         self.collection = hyou.client.Collection(self.api)

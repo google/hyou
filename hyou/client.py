@@ -23,6 +23,7 @@ import datetime
 import googleapiclient.discovery
 import httplib2
 
+from . import schema
 from . import util
 
 
@@ -35,11 +36,18 @@ GOOGLE_SPREADSHEET_SCOPES = util.SCOPES
 
 class API(object):
 
-    def __init__(self, http):
-        self.sheets = googleapiclient.discovery.build(
-            'sheets', 'v4', http=http,
-            discoveryServiceUrl=SHEETS_API_DISCOVERY_URL)
-        self.drive = googleapiclient.discovery.build('drive', 'v2', http=http)
+    def __init__(self, http, discovery):
+        if discovery:
+            self.sheets = googleapiclient.discovery.build(
+                'sheets', 'v4', http=http,
+                discoveryServiceUrl=SHEETS_API_DISCOVERY_URL)
+            self.drive = googleapiclient.discovery.build(
+                'drive', 'v2', http=http)
+        else:
+            self.sheets = googleapiclient.discovery.build_from_document(
+                schema.SHEETS_V4, http=http)
+            self.drive = googleapiclient.discovery.build_from_document(
+                schema.DRIVE_V2, http=http)
 
 
 class Collection(util.LazyOrderedDictionary):
@@ -51,13 +59,13 @@ class Collection(util.LazyOrderedDictionary):
         self._api = api
 
     @classmethod
-    def login(cls, json_path=None, json_text=None):
+    def login(cls, json_path=None, json_text=None, discovery=False):
         if json_text is None:
             with open(json_path, 'r') as f:
                 json_text = f.read()
         credentials = util.parse_credentials(json_text)
         http = credentials.authorize(httplib2.Http())
-        return cls(API(http))
+        return cls(API(http, discovery=discovery))
 
     def create_spreadsheet(self, title, rows=1000, cols=26):
         body = {
