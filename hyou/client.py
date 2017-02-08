@@ -259,6 +259,21 @@ class WorksheetView(util.CustomMutableFixedList):
     def __getitem__(self, index):
         return self._view_rows[index]
 
+    def __setitem__(self, index, new_value):
+        if isinstance(index, slice):
+            start, stop, step = index.indices(len(self))
+            assert step == 1, 'slicing with step is not supported'
+            if stop < start:
+                stop = start
+            if len(new_value) != stop - start:
+                raise ValueError(
+                    'Tried to assign %d values to %d element slice' %
+                    (len(new_value), stop - start))
+            for i, new_value_one in py3.zip(py3.range(start, stop), new_value):
+                self[i] = new_value_one
+            return
+        self._view_rows[index][:] = new_value
+
     def __len__(self):
         return self.rows
 

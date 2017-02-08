@@ -120,6 +120,7 @@ class WorksheetTest(unittest.TestCase):
         self.worksheet[0][3:2] = []
         self.worksheet[0][:] = ['honoka', 'eri', 'kotori', 'umi', 'rin']
         self.worksheet[1][0:-1] = ['maki', 'nozomi', 'hanayo', 'niko']
+        # TODO(nya): Add tests of row slicing.
         self.assertRaises(
             ValueError,
             self.worksheet[1].__setitem__,
