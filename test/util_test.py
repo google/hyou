@@ -52,19 +52,19 @@ class ParseCredentialsTest(unittest.TestCase):
 
     def test_login_user(self):
         json_path = os.path.join(
-            os.path.dirname(__file__), 'creds', 'test_user.json')
+            os.path.dirname(__file__), 'creds', 'example-user.json')
         with py3.open(json_path) as f:
             hyou.util.parse_credentials(f.read())
 
     def test_login_bot(self):
         json_path = os.path.join(
-            os.path.dirname(__file__), 'creds', 'test_bot.json')
+            os.path.dirname(__file__), 'creds', 'example-bot.json')
         with py3.open(json_path) as f:
             hyou.util.parse_credentials(f.read())
 
     def test_login_invalid(self):
         json_path = os.path.join(
-            os.path.dirname(__file__), 'creds', 'test_invalid.json')
+            os.path.dirname(__file__), 'creds', 'example-invalid.json')
         with py3.open(json_path) as f:
             self.assertRaises(
                 ValueError, hyou.util.parse_credentials, f.read())
