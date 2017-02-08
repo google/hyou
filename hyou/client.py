@@ -191,7 +191,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
         return response['updatedSpreadsheet']
 
 
-class WorksheetView(object):
+class WorksheetView(util.CustomMutableFixedList):
 
     def __init__(self, worksheet, api, start_row, end_row, start_col, end_col):
         self._worksheet = worksheet
@@ -255,11 +255,6 @@ class WorksheetView(object):
             spreadsheetId=self._worksheet._spreadsheet.key,
             body=request).execute()
         del self._queued_updates[:]
-
-    def __bool__(self):
-        return len(self) > 0
-
-    __nonzero__ = __bool__  # For Python 2
 
     def __getitem__(self, index):
         return self._view_rows[index]
