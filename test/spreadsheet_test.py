@@ -14,14 +14,12 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import datetime
 import unittest
 
 import hyou.client
+from hyou import py3
 
 import http_mocks
 
@@ -47,10 +45,10 @@ class SpreadsheetTest(unittest.TestCase):
     def test_worksheet_accessors(self):
         # iter()
         it = iter(self.spreadsheet)
-        self.assertEqual('Sheet1', next(it))
-        self.assertEqual('Sheet2', next(it))
-        self.assertEqual('Sheet3', next(it))
-        self.assertRaises(StopIteration, next, it)
+        self.assertEqual('Sheet1', py3.next(it))
+        self.assertEqual('Sheet2', py3.next(it))
+        self.assertEqual('Sheet3', py3.next(it))
+        self.assertRaises(StopIteration, py3.next, it)
         # len()
         self.assertEqual(3, len(self.spreadsheet))
         # keys()

@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import (
-    absolute_import, division, print_function, unicode_literals)
-
 import os
 
 import setuptools
 
 
 def read_file(name):
-    with open(os.path.join(os.path.dirname(__file__), name)) as f:
+    with open(os.path.join(os.path.dirname(__file__), name), 'r') as f:
         return f.read().strip()
 
 

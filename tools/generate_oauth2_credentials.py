@@ -18,16 +18,13 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import argparse
 import os
 import sys
 
-import future.utils
 import hyou
+from hyou import py3
 import oauth2client.client
 
 TEST_CLIENT_ID = (
@@ -39,13 +36,13 @@ TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 def create_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        '--client-id', type=str, default=TEST_CLIENT_ID,
+        '--client-id', type=py3.str, default=TEST_CLIENT_ID,
         help='OAuth2 client ID.')
     parser.add_argument(
-        '--client-secret', type=str, default=TEST_CLIENT_SECRET,
+        '--client-secret', type=py3.str, default=TEST_CLIENT_SECRET,
         help='OAuth2 client secret.')
     parser.add_argument(
-        'output_json_path', type=str,
+        'output_json_path', type=py3.str,
         help='Output JSON path.')
     return parser
 
@@ -65,13 +62,13 @@ def main(argv):
     print(url)
     print()
 
-    code = input('Code: ').strip()
+    code = py3.input('Code: ').strip()
 
     credentials = flow.step2_exchange(code)
 
-    with open(opts.output_json_path, 'wb') as f:
+    with py3.open(opts.output_json_path, 'wb') as f:
         os.fchmod(f.fileno(), 0o600)
-        f.write(future.utils.native_str_to_bytes(credentials.to_json()))
+        f.write(py3.native_str_to_bytes(credentials.to_json()))
 
     print()
     print('Credentials successfully saved to %s' % opts.output_json_path)

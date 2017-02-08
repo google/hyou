@@ -14,9 +14,6 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import hashlib
 import httplib2
@@ -24,8 +21,9 @@ import json
 import logging
 import os
 
-from future.moves.urllib import parse
+from six.moves.urllib import parse
 
+from hyou import py3
 import hyou.util
 
 
@@ -44,7 +42,7 @@ def _canonicalize_uri(uri):
 
 def _canonicalize_json(body_json):
     # body_json can be bytes or str.
-    if isinstance(body_json, str):
+    if isinstance(body_json, py3.str):
         json_str = body_json
     else:
         json_str = body_json.decode('utf-8')
@@ -65,7 +63,7 @@ def _load_records():
     records = {}
     for filename in sorted(os.listdir(RECORDS_DIR)):
         record_path = os.path.join(RECORDS_DIR, filename)
-        with open(record_path, 'r', encoding='utf-8') as f:
+        with py3.open(record_path, 'r', encoding='utf-8') as f:
             record = json.load(f)
             record['_path'] = record_path
             body_bytes = (
@@ -90,7 +88,7 @@ class ReplayHttp(object):
     def __init__(self):
         self._real_http = httplib2.Http()
         if ENV_CREDENTIALS:
-            with open(ENV_CREDENTIALS) as f:
+            with py3.open(ENV_CREDENTIALS, 'r') as f:
                 credentials = hyou.util.parse_credentials(f.read())
             self._real_http = credentials.authorize(self._real_http)
         self._records = _load_records()

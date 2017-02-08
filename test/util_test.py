@@ -16,26 +16,17 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import os
 import unittest
 
-import future.utils
 import mock
 
+from hyou import py3
 import hyou.util
 
 
 class MiscUtilsTest(unittest.TestCase):
-
-    def test_to_native_str(self):
-        assert isinstance(
-            hyou.util.to_native_str('cat'), future.utils.native_str)
-        assert isinstance(
-            hyou.util.to_native_str('ねこ'), future.utils.native_str)
 
     def test_format_column_address(self):
         assert hyou.util.format_column_address(0) == 'A'
@@ -62,19 +53,19 @@ class ParseCredentialsTest(unittest.TestCase):
     def test_login_user(self):
         json_path = os.path.join(
             os.path.dirname(__file__), 'creds', 'test_user.json')
-        with open(json_path) as f:
+        with py3.open(json_path) as f:
             hyou.util.parse_credentials(f.read())
 
     def test_login_bot(self):
         json_path = os.path.join(
             os.path.dirname(__file__), 'creds', 'test_bot.json')
-        with open(json_path) as f:
+        with py3.open(json_path) as f:
             hyou.util.parse_credentials(f.read())
 
     def test_login_invalid(self):
         json_path = os.path.join(
             os.path.dirname(__file__), 'creds', 'test_invalid.json')
-        with open(json_path) as f:
+        with py3.open(json_path) as f:
             self.assertRaises(
                 ValueError, hyou.util.parse_credentials, f.read())
 
@@ -92,10 +83,10 @@ class LazyOrderedDictionaryTest(unittest.TestCase):
             ('A', 'apple'), ('B', 'banana'), ('C', 'cinamon')]
         # iter()
         it = iter(self.dict)
-        self.assertEqual('A', next(it))
-        self.assertEqual('B', next(it))
-        self.assertEqual('C', next(it))
-        self.assertRaises(StopIteration, next, it)
+        self.assertEqual('A', py3.next(it))
+        self.assertEqual('B', py3.next(it))
+        self.assertEqual('C', py3.next(it))
+        self.assertRaises(StopIteration, py3.next, it)
         # len()
         self.assertEqual(3, len(self.dict))
         # keys()

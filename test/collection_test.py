@@ -14,13 +14,11 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import unittest
 
 import hyou.client
+from hyou import py3
 
 import http_mocks
 
@@ -45,10 +43,10 @@ class CollectionTest(unittest.TestCase):
         # iter()
         it = iter(self.collection)
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', next(it))
+            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', py3.next(it))
         self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', next(it))
-        self.assertRaises(StopIteration, next, it)
+            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', py3.next(it))
+        self.assertRaises(StopIteration, py3.next, it)
         # len()
         self.assertEqual(2, len(self.collection))
         # keys()

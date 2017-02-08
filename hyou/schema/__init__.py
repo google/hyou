@@ -14,9 +14,6 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 from .sheets_v4 import SCHEMA as SHEETS_V4  # noqa: F401
 from .drive_v2 import SCHEMA as DRIVE_V2  # noqa: F401

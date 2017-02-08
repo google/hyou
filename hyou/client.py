@@ -14,15 +14,14 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import datetime
 
 import googleapiclient.discovery
 import httplib2
+import six
 
+from . import py3
 from . import schema
 from . import util
 
@@ -61,7 +60,7 @@ class Collection(util.LazyOrderedDictionary):
     @classmethod
     def login(cls, json_path=None, json_text=None, discovery=False):
         if json_text is None:
-            with open(json_path, 'r') as f:
+            with py3.open(json_path, 'r') as f:
                 json_text = f.read()
         credentials = util.parse_credentials(json_text)
         http = credentials.authorize(httplib2.Http())
@@ -105,7 +104,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self._updated = None
 
     def __repr__(self):
-        return util.to_native_str(
+        return py3.str_to_native_str(
             '%s(key="%s")' % (self.__class__.__name__, self.key))
 
     def refresh(self, entry=None):
@@ -214,7 +213,7 @@ class WorksheetView(object):
         self.end_col = end_col
         self._view_rows = [
             WorksheetViewRow(self, row, start_col, end_col)
-            for row in range(start_row, end_row)]
+            for row in py3.range(start_row, end_row)]
 
     def _ensure_cells_fetched(self):
         if self._cells_fetched:
@@ -224,7 +223,7 @@ class WorksheetView(object):
             self.start_col, self.end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
-            range=util.to_native_str(range_str),
+            range=py3.str_to_native_str(range_str),
             majorDimension='ROWS',
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
@@ -307,7 +306,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             return WorksheetViewRow(
                 self._view, self._row,
                 self._start_col + start, self._start_col + stop)
-        assert isinstance(index, int)
+        assert isinstance(index, six.integer_types)
         if index < 0:
             col = self._end_col + index
         else:
@@ -328,10 +327,10 @@ class WorksheetViewRow(util.CustomMutableFixedList):
                 raise ValueError(
                     'Tried to assign %d values to %d element slice' %
                     (len(new_value), stop - start))
-            for i, new_value_one in zip(range(start, stop), new_value):
+            for i, new_value_one in py3.zip(py3.range(start, stop), new_value):
                 self[i] = new_value_one
             return
-        assert isinstance(index, int)
+        assert isinstance(index, six.integer_types)
         if index < 0:
             col = self._end_col + index
         else:
@@ -340,17 +339,17 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             raise IndexError()
         if new_value is None:
             new_value = ''
-        elif isinstance(new_value, int):
+        elif isinstance(new_value, six.integer_types):
             new_value = '%d' % new_value
         elif isinstance(new_value, float):
             # Do best not to lose precision...
             new_value = '%.20e' % new_value
-        elif isinstance(new_value, bytes):
+        elif isinstance(new_value, py3.bytes):
             # May raise UnicodeDecodeError.
             new_value = new_value.decode('ascii')
-        elif not isinstance(new_value, str):
-            new_value = str(new_value)
-        assert isinstance(new_value, str)
+        elif not isinstance(new_value, py3.str):
+            new_value = py3.str(new_value)
+        assert isinstance(new_value, py3.str)
         self._view._input_value_map[(self._row, col)] = new_value
         self._view._queued_updates.append((self._row, col, new_value))
 
@@ -359,11 +358,11 @@ class WorksheetViewRow(util.CustomMutableFixedList):
 
     def __iter__(self):
         self._view._ensure_cells_fetched()
-        for col in range(self._start_col, self._end_col):
+        for col in py3.range(self._start_col, self._end_col):
             yield self._view._input_value_map.get((self._row, col), '')
 
     def __repr__(self):
-        return repr([self[i] for i in range(len(self))])
+        return repr([self[i] for i in py3.range(len(self))])
 
 
 class Worksheet(WorksheetView):
@@ -409,8 +408,8 @@ class Worksheet(WorksheetView):
             start_col=start_col, end_col=end_col)
 
     def set_size(self, rows, cols):
-        assert isinstance(rows, int) and rows > 0
-        assert isinstance(cols, int) and cols > 0
+        assert isinstance(rows, six.integer_types) and rows > 0
+        assert isinstance(cols, six.integer_types) and cols > 0
         new_entry = self._make_single_batch_request(
             'updateSheetProperties',
             {

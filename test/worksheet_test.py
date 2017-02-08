@@ -14,13 +14,11 @@
 
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
-from builtins import (  # noqa: F401
-    ascii, bytes, chr, dict, filter, hex, input, int, list, map, next,
-    object, oct, open, pow, range, round, str, super, zip)
 
 import unittest
 
 import hyou.client
+from hyou import py3
 import hyou.util
 
 import http_mocks
@@ -29,7 +27,7 @@ import http_mocks
 class Dummy(object):
 
     def __str__(self):
-        return hyou.util.to_native_str('<dummy>')
+        return py3.str_to_native_str('<dummy>')
 
 
 class WorksheetTest(unittest.TestCase):
