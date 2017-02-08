@@ -207,10 +207,10 @@ class WorksheetView(object):
         del self._queued_updates[:]
 
     def _reset_size(self, start_row, end_row, start_col, end_col):
-        self.start_row = start_row
-        self.end_row = end_row
-        self.start_col = start_col
-        self.end_col = end_col
+        self._start_row = start_row
+        self._end_row = end_row
+        self._start_col = start_col
+        self._end_col = end_col
         self._view_rows = [
             WorksheetViewRow(self, row, start_col, end_col)
             for row in py3.range(start_row, end_row)]
@@ -219,8 +219,8 @@ class WorksheetView(object):
         if self._cells_fetched:
             return
         range_str = util.format_range_a1_notation(
-            self._worksheet.title, self.start_row, self.end_row,
-            self.start_col, self.end_col)
+            self._worksheet.title, self._start_row, self._end_row,
+            self._start_col, self._end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
             range=py3.str_to_native_str(range_str),
@@ -229,9 +229,9 @@ class WorksheetView(object):
             dateTimeRenderOption='FORMATTED_STRING').execute()
         self._input_value_map = {}
         for i, row in enumerate(response.get('values', [])):
-            index_row = self.start_row + i
+            index_row = self._start_row + i
             for j, value in enumerate(row):
-                index_col = self.start_col + j
+                index_col = self._start_col + j
                 self._input_value_map.setdefault((index_row, index_col), value)
         self._cells_fetched = True
 
@@ -282,11 +282,27 @@ class WorksheetView(object):
 
     @property
     def rows(self):
-        return self.end_row - self.start_row
+        return self._end_row - self._start_row
 
     @property
     def cols(self):
-        return self.end_col - self.start_col
+        return self._end_col - self._start_col
+
+    @property
+    def start_row(self):
+        return self._start_row
+
+    @property
+    def end_row(self):
+        return self._end_row
+
+    @property
+    def start_col(self):
+        return self._start_col
+
+    @property
+    def end_col(self):
+        return self._end_col
 
 
 class WorksheetViewRow(util.CustomMutableFixedList):
