@@ -15,41 +15,21 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
-import argparse
+import os
 import random
 import sys
 
 import hyou
-from hyou import py3
-
-TEST_SPREADSHEET_KEY = '1hxNAHH-DUWgFcC603mFARGYOeKUwiRq56VsHOJSA5Z0'
-
-
-def create_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--credentials', type=py3.str,
-        help='Credentials JSON path.')
-    return parser
-
-
-def get_credentials(json_path=None):
-    assert json_path  # TODO: Read from os.environ
-    with py3.open(json_path, 'r') as f:
-        return f.read()
 
 
 def main():
-    parser = create_parser()
-    opts = parser.parse_args()
+    json_path = os.path.join(
+        os.path.dirname(__file__), 'creds', 'unittest-sheets.json')
+    collection = hyou.login(json_path)
 
-    collection = hyou.login(json_text=get_credentials(opts.credentials))
+    spreadsheet = collection['1hxNAHH-DUWgFcC603mFARGYOeKUwiRq56VsHOJSA5Z0']
 
-    spreadsheet = collection[TEST_SPREADSHEET_KEY]
-
-    print(
-        'Running tests with https://docs.google.com/spreadsheets/d/%s/edit ...'
-        % TEST_SPREADSHEET_KEY)
+    print('Running tests with %s ...' % spreadsheet.url)
 
     worksheet_title = 'sheet%08d' % random.randrange(100000000)
     worksheet = spreadsheet.add_worksheet(worksheet_title, rows=20, cols=10)
