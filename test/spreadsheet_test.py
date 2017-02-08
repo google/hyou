@@ -19,36 +19,34 @@ import datetime
 import unittest
 
 import hyou.client
-from hyou import py3
 
 import http_mocks
 
 
-class SpreadsheetTest(unittest.TestCase):
+class SpreadsheetReadOnlyTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(http_mocks.ReplayHttp(), discovery=False)
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-sheets.json'),
+            discovery=False)
 
     def setUp(self):
         self.collection = hyou.client.Collection(self.api)
-        self.collection.keys()  # Fetch the list.
         self.spreadsheet = self.collection[
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
+            '1EQKX_l9GS2HSAMqQd_IrLjy5M0IFq1SbO3uUKVlfHjU']
 
     def test_repr(self):
         self.assertEqual(
             str('Spreadsheet('
-                'key="1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc")'),
+                'key="1EQKX_l9GS2HSAMqQd_IrLjy5M0IFq1SbO3uUKVlfHjU")'),
             repr(self.spreadsheet))
 
     def test_worksheet_accessors(self):
         # iter()
-        it = iter(self.spreadsheet)
-        self.assertEqual('Sheet1', py3.next(it))
-        self.assertEqual('Sheet2', py3.next(it))
-        self.assertEqual('Sheet3', py3.next(it))
-        self.assertRaises(StopIteration, py3.next, it)
+        self.assertEqual(
+            ['Sheet1', 'Sheet2', 'Sheet3'],
+            list(self.spreadsheet))
         # len()
         self.assertEqual(3, len(self.spreadsheet))
         # keys()
@@ -81,30 +79,39 @@ class SpreadsheetTest(unittest.TestCase):
     def test_refresh(self):
         self.spreadsheet.refresh()
 
-    def test_add_worksheet(self):
-        worksheet = self.spreadsheet.add_worksheet('Sheet4', rows=2, cols=8)
-        self.assertEqual('Sheet4', worksheet.title)
-        self.assertEqual(2, worksheet.rows)
-        self.assertEqual(8, worksheet.cols)
-
-    def test_delete_worksheet(self):
-        self.spreadsheet.delete_worksheet('Sheet3')
-
     def test_url(self):
         self.assertEqual(
             'https://docs.google.com/spreadsheets/d/'
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc/edit',
+            '1EQKX_l9GS2HSAMqQd_IrLjy5M0IFq1SbO3uUKVlfHjU/edit',
             self.spreadsheet.url)
 
     def test_title(self):
-        self.assertEqual('Test Sheet', self.spreadsheet.title)
-
-    def test_title_setter(self):
-        self.spreadsheet.title = 'Yet Another Test Sheet'
+        self.assertEqual('SpreadsheetReadOnlyTest', self.spreadsheet.title)
 
     def test_updated(self):
-        self.assertEqual(
-            datetime.datetime(
-                year=2017, month=2, day=3, hour=1, minute=25, second=31,
-                microsecond=49000),
-            self.spreadsheet.updated)
+        self.assertTrue(
+            isinstance(self.spreadsheet.updated, datetime.datetime))
+
+
+class SpreadsheetReadWriteTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-sheets.json'),
+            discovery=False)
+
+    def setUp(self):
+        self.collection = hyou.client.Collection(self.api)
+        self.spreadsheet = self.collection[
+            '1cs7S44YeWzIx5AEJSUwP4zMsKKVsKrTi8kxNhJbqI08']
+
+    def test_set_title(self):
+        self.spreadsheet.title = 'SpreadsheetReadWriteTest'
+
+    def test_add_delete_worksheet(self):
+        worksheet = self.spreadsheet.add_worksheet('Sheet9', rows=2, cols=8)
+        self.assertEqual('Sheet9', worksheet.title)
+        self.assertEqual(2, worksheet.rows)
+        self.assertEqual(8, worksheet.cols)
+        self.spreadsheet.delete_worksheet('Sheet9')

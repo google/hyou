@@ -25,7 +25,11 @@ import http_mocks
 class APITest(unittest.TestCase):
 
     def test_no_discovery(self):
-        hyou.client.API(http_mocks.ReplayHttp(), discovery=False)
+        hyou.client.API(
+            http_mocks.ReplayHttp(None),
+            discovery=False)
 
     def test_discovery(self):
-        hyou.client.API(http_mocks.ReplayHttp(), discovery=True)
+        hyou.client.API(
+            http_mocks.ReplayHttp('unittest-collection.json'),
+            discovery=True)

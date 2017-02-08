@@ -30,186 +30,122 @@ class Dummy(object):
         return py3.str_to_native_str('<dummy>')
 
 
-class WorksheetTest(unittest.TestCase):
+class WorksheetReadOnlyTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(http_mocks.ReplayHttp(), discovery=False)
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-sheets.json'),
+            discovery=False)
 
     def setUp(self):
         self.collection = hyou.client.Collection(self.api)
         self.spreadsheet = self.collection[
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
-        self.worksheet = self.spreadsheet['Sheet1']
+            '18OLN5A2SSKAeYLXw4SnZxU1yRJnMdf_ZCjc0D2UdhX8']
+        self.worksheet1 = self.spreadsheet['Sheet1']
 
     def test_read(self):
-        self.assertEqual('honoka', self.worksheet[0][0])
-        self.assertEqual('eri', self.worksheet[0][1])
-        self.assertEqual('kotori', self.worksheet[0][2])
-        self.assertEqual('umi', self.worksheet[0][3])
-        self.assertEqual('rin', self.worksheet[0][4])
-        self.assertEqual('maki', self.worksheet[1][0])
-        self.assertEqual('nozomi', self.worksheet[1][1])
-        self.assertEqual('hanayo', self.worksheet[1][2])
-        self.assertEqual('niko', self.worksheet[1][3])
-        self.assertEqual('', self.worksheet[1][4])
+        self.assertEqual('honoka', self.worksheet1[0][0])
+        self.assertEqual('eri', self.worksheet1[0][1])
+        self.assertEqual('kotori', self.worksheet1[0][2])
+        self.assertEqual('umi', self.worksheet1[0][3])
+        self.assertEqual('rin', self.worksheet1[0][4])
+        self.assertEqual('maki', self.worksheet1[1][0])
+        self.assertEqual('nozomi', self.worksheet1[1][1])
+        self.assertEqual('hanayo', self.worksheet1[1][2])
+        self.assertEqual('niko', self.worksheet1[1][3])
+        self.assertEqual('', self.worksheet1[1][4])
 
         # negative indexing
-        self.assertEqual('kotori', self.worksheet[-2][-3])
+        self.assertEqual('kotori', self.worksheet1[-2][-3])
 
         # slicing
-        t = self.worksheet[:]
+        t = self.worksheet1[:]
         self.assertEqual(2, len(t))
         self.assertEqual('honoka', t[0][0])
-        t = self.worksheet[1:]
+        t = self.worksheet1[1:]
         self.assertEqual(1, len(t))
         self.assertEqual('maki', t[0][0])
-        t = self.worksheet[:1]
+        t = self.worksheet1[:1]
         self.assertEqual(1, len(t))
         self.assertEqual('honoka', t[0][0])
-        t = self.worksheet[0:1]
+        t = self.worksheet1[0:1]
         self.assertEqual(1, len(t))
         self.assertEqual('honoka', t[0][0])
-        t = self.worksheet[-1:]
+        t = self.worksheet1[-1:]
         self.assertEqual(1, len(t))
         self.assertEqual('maki', t[0][0])
-        t = self.worksheet[:-1]
+        t = self.worksheet1[:-1]
         self.assertEqual(1, len(t))
         self.assertEqual('honoka', t[0][0])
-        t = self.worksheet[-2:0]
+        t = self.worksheet1[-2:0]
         self.assertEqual(0, len(t))
 
-        t = self.worksheet[0][:]
+        t = self.worksheet1[0][:]
         self.assertEqual(5, len(t))
         self.assertEqual('honoka', t[0])
-        t = self.worksheet[0][2:]
+        t = self.worksheet1[0][2:]
         self.assertEqual(3, len(t))
         self.assertEqual('kotori', t[0])
-        t = self.worksheet[0][:2]
+        t = self.worksheet1[0][:2]
         self.assertEqual(2, len(t))
         self.assertEqual('honoka', t[0])
-        t = self.worksheet[0][2:3]
+        t = self.worksheet1[0][2:3]
         self.assertEqual(1, len(t))
         self.assertEqual('kotori', t[0])
-        t = self.worksheet[0][-3:]
+        t = self.worksheet1[0][-3:]
         self.assertEqual(3, len(t))
         self.assertEqual('kotori', t[0])
-        t = self.worksheet[0][:-3]
+        t = self.worksheet1[0][:-3]
         self.assertEqual(2, len(t))
         self.assertEqual('honoka', t[0])
-        t = self.worksheet[0][-3:0]
+        t = self.worksheet1[0][-3:0]
         self.assertEqual(0, len(t))
 
         # out of bounds
-        self.assertRaises(IndexError, lambda: self.worksheet[0][5])
-        self.assertRaises(IndexError, lambda: self.worksheet[0][-6])
-        self.assertRaises(IndexError, lambda: self.worksheet[2][0])
-        self.assertRaises(IndexError, lambda: self.worksheet[-3][0])
-
-    def test_write(self):
-        self.worksheet.commit()  # empty commit does nothing
-        self.worksheet[1][3] = 'nicco'
-        self.worksheet[1][3] = 'nicco'
-        self.worksheet[1][3] = 'ni'
-        self.worksheet[0][-3] = 'chunchun'
-        self.assertRaises(
-            IndexError, self.worksheet[1].__setitem__, 5, '(*8*)')
-        self.worksheet.commit()
-
-    def test_write_slice(self):
-        self.worksheet[0][3:2] = []
-        self.worksheet[0][:] = ['honoka', 'eri', 'kotori', 'umi', 'rin']
-        self.worksheet[1][0:-1] = ['maki', 'nozomi', 'hanayo', 'niko']
-        # TODO(nya): Add tests of row slicing.
-        self.assertRaises(
-            ValueError,
-            self.worksheet[1].__setitem__,
-            slice(None),
-            ['maki', 'nozomi', 'hanayo', 'niko'])
-        self.worksheet.commit()
-
-    def test_write_nonstr(self):
-        self.worksheet.commit()  # empty commit does nothing
-        self.worksheet[0][0] = 28
-        self.worksheet[0][1] = 28.3
-        self.worksheet[0][2] = 'kotori-chan'
-        self.assertRaises(
-            UnicodeDecodeError, self.worksheet[0].__setitem__, 3,
-            b'\xe6\xb5\xb7')
-        self.worksheet[0][4] = 'nya'
-        self.worksheet[1][0] = Dummy()
-        self.worksheet[1][4] = None
-        self.worksheet.commit()
-
-    def test_write_with(self):
-        with self.worksheet:
-            self.worksheet[1][3] = 'nico'
+        with self.assertRaises(IndexError):
+            self.worksheet1[0][5]
+        with self.assertRaises(IndexError):
+            self.worksheet1[0][-6]
+        with self.assertRaises(IndexError):
+            self.worksheet1[2][0]
+        with self.assertRaises(IndexError):
+            self.worksheet1[-3][0]
 
     def test_nonzero(self):
-        self.assertFalse(self.worksheet[0:0])
-        self.assertFalse(self.worksheet[0][0:0])
+        self.assertFalse(self.worksheet1[0:0])
+        self.assertFalse(self.worksheet1[0][0:0])
         self.assertFalse(
-            self.worksheet.view(
+            self.worksheet1.view(
                 start_row=0, end_row=0, start_col=0, end_col=0))
 
-    def test_refresh(self):
-        self.assertEqual('honoka', self.worksheet[0][0])
-        self.worksheet[0][0] = 'yukiho'
-        self.assertEqual('yukiho', self.worksheet[0][0])
-
-        # Discard write operations
-        self.worksheet.refresh()
-
-        self.assertEqual('honoka', self.worksheet[0][0])
-
-    def test_set_size(self):
-        self.worksheet.set_size(7, 8)
-        self.assertEqual(7, self.worksheet.rows)
-        self.assertEqual(8, self.worksheet.cols)
-        self.assertEqual(7, len(self.worksheet))
-        self.assertEqual(8, len(self.worksheet[0]))
-
     def test_title(self):
-        self.assertEqual('Sheet1', self.worksheet.title)
-
-    def test_title_setter(self):
-        self.worksheet.title = 'Summary'
-        self.assertEqual('Summary', self.worksheet.title)
+        self.assertEqual('Sheet1', self.worksheet1.title)
 
     def test_rows(self):
-        self.assertEqual(2, self.worksheet.rows)
-
-    def test_rows_setter(self):
-        self.worksheet.rows = 7
-        self.assertEqual(7, self.worksheet.rows)
-        self.assertEqual(5, self.worksheet.cols)
+        self.assertEqual(2, self.worksheet1.rows)
 
     def test_cols(self):
-        self.assertEqual(5, self.worksheet.cols)
-
-    def test_cols_setter(self):
-        self.worksheet.cols = 8
-        self.assertEqual(2, self.worksheet.rows)
-        self.assertEqual(8, self.worksheet.cols)
+        self.assertEqual(5, self.worksheet1.cols)
 
     def test_len(self):
-        self.assertEqual(2, len(self.worksheet))
-        self.assertEqual(5, len(self.worksheet[0]))
+        self.assertEqual(2, len(self.worksheet1))
+        self.assertEqual(5, len(self.worksheet1[0]))
 
     def test_iter(self):
-        it = iter(self.worksheet)
-        self.assertEqual(['honoka', 'eri', 'kotori', 'umi', 'rin'], next(it))
-        self.assertEqual(['maki', 'nozomi', 'hanayo', 'niko', ''], next(it))
-        self.assertRaises(StopIteration, next, it)
+        self.assertEqual(
+            [['honoka', 'eri', 'kotori', 'umi', 'rin'],
+             ['maki', 'nozomi', 'hanayo', 'niko', '']],
+            list(self.worksheet1))
 
     def test_repr(self):
         self.assertEqual(
             repr([['honoka', 'eri', 'kotori', 'umi', 'rin'],
                   ['maki', 'nozomi', 'hanayo', 'niko', '']]),
-            repr(self.worksheet))
+            repr(self.worksheet1))
 
     def test_view(self):
-        view = self.worksheet.view()
+        view = self.worksheet1.view()
         self.assertEqual(0, view.start_row)
         self.assertEqual(2, view.end_row)
         self.assertEqual(0, view.start_col)
@@ -217,16 +153,20 @@ class WorksheetTest(unittest.TestCase):
         self.assertEqual(2, view.rows)
         self.assertEqual(5, view.cols)
 
-        self.assertRaises(IndexError, self.worksheet.view, start_row=3)
-        self.assertRaises(IndexError, self.worksheet.view, end_row=-1)
-        self.assertRaises(IndexError, self.worksheet.view,
-                          start_row=1, end_row=0)
-        self.assertRaises(IndexError, self.worksheet.view, start_col=6)
-        self.assertRaises(IndexError, self.worksheet.view, end_col=-1)
-        self.assertRaises(IndexError, self.worksheet.view,
-                          start_col=1, end_col=0)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(start_row=3)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(end_row=-1)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(start_row=1, end_row=0)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(start_col=6)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(end_col=-1)
+        with self.assertRaises(IndexError):
+            self.worksheet1.view(start_col=1, end_col=0)
 
-        view = self.worksheet.view(end_row=1, start_col=2)
+        view = self.worksheet1.view(end_row=1, start_col=2)
         self.assertEqual(0, view.start_row)
         self.assertEqual(1, view.end_row)
         self.assertEqual(2, view.start_col)
@@ -237,7 +177,88 @@ class WorksheetTest(unittest.TestCase):
         self.assertEqual('kotori', view[0][0])
         self.assertEqual('kotori', view[-1][-3])
 
-        self.assertRaises(IndexError, lambda: view[0][3])
-        self.assertRaises(IndexError, lambda: view[0][-4])
-        self.assertRaises(IndexError, lambda: view[1][0])
-        self.assertRaises(IndexError, lambda: view[-2][0])
+        with self.assertRaises(IndexError):
+            view[0][3]
+        with self.assertRaises(IndexError):
+            view[0][-4]
+        with self.assertRaises(IndexError):
+            view[1][0]
+        with self.assertRaises(IndexError):
+            view[2][0]
+
+
+class WorksheetReadWriteTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-sheets.json'),
+            discovery=False)
+
+    def setUp(self):
+        self.collection = hyou.client.Collection(self.api)
+        self.spreadsheet = self.collection[
+            '1z5eYrVoLP-RUWdzeqUShRc2VPFX0SUCTlHMmUS0K8Lo']
+        self.worksheet1 = self.spreadsheet['Sheet1']
+
+    def test_set_title(self):
+        self.worksheet1.title = 'Sheet1'
+
+    def test_set_size(self):
+        self.worksheet1.set_size(2, 5)
+
+    def test_set_rows(self):
+        self.worksheet1.rows = 2
+
+    def test_set_cols(self):
+        self.worksheet1.cols = 5
+
+    def test_write(self):
+        self.worksheet1[1][3] = 'nicco'
+        self.worksheet1[1][3] = 'nicco'
+        self.worksheet1[1][3] = 'ni'
+        self.worksheet1[0][-3] = 'chunchun'
+        with self.assertRaises(IndexError):
+            self.worksheet1[1][5] = '(*8*)'
+        self.worksheet1.commit()
+
+    def test_write_slice(self):
+        self.worksheet1[0][3:2] = []
+        self.worksheet1[0][:] = ['honoka', 'eri', 'kotori', 'umi', 'rin']
+        self.worksheet1[1][0:-1] = ['maki', 'nozomi', 'hanayo', 'niko']
+        with self.assertRaises(ValueError):
+            self.worksheet1[1][:] = ['maki', 'nozomi', 'hanayo', 'niko']
+        self.worksheet1[:] = [
+            ['honoka', 'eri', 'kotori', 'umi', 'rin'],
+            ['maki', 'nozomi', 'hanayo', 'niko', '']]
+        with self.assertRaises(ValueError):
+            self.worksheet1[:] = [
+                ['honoka', 'eri', 'kotori', 'umi', 'rin'],
+                ['maki', 'nozomi', 'hanayo', 'niko']]
+        self.worksheet1.commit()
+
+    def test_write_nonstr(self):
+        self.worksheet1[0][0] = 28
+        self.worksheet1[0][1] = 28.3
+        self.worksheet1[0][2] = 'kotori-chan'
+        with self.assertRaises(UnicodeDecodeError):
+            self.worksheet1[0][3] = b'\xe6\xb5\xb7'
+        self.worksheet1[0][4] = 'nya'
+        self.worksheet1[1][0] = Dummy()
+        self.worksheet1[1][4] = None
+        self.worksheet1.commit()
+
+    def test_write_with(self):
+        with self.worksheet1:
+            self.worksheet1[1][3] = 'nico'
+
+    def test_refresh(self):
+        self.assertEqual('honoka', self.worksheet1[0][0])
+
+        self.worksheet1[0][0] = 'yukiho'
+        self.assertEqual('yukiho', self.worksheet1[0][0])
+
+        # Discard write operations
+        self.worksheet1.refresh()
+
+        self.assertEqual('honoka', self.worksheet1[0][0])

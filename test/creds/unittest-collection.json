@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hyou-integration-testing",
+  "private_key_id": "dbedb7e2712ba8ed60606a4219ac7ef6208191ed",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCh2cIL2jSIJxbn\n+nUi9XedwE6Z7SXrEpCwdixblME3MBlfISXtuEzwW0rZuJNSW05pGN5E8K3h1oop\nZL40SSVhbnEMLMDDk7q7qYX16Er8ZIrZUAlulm+blQR80T76ng9hBVCBv/14MjpV\noGjBhXHjLp34M5zAdIjNQBNQCda7U5K6aYBd+KxaRNsWIZxzobDF2vEHBgFI+dD1\nP9xSnKRtUj3sm7LyKITzUhZGjikWMX1LCWVxR1BC+8M7vAujOD0l3crRhqPADtM7\nIxT0lp4CuQj8MzRh94mxg3YqCUHEgifGUtPNgyyhkH+FZqaIVC5VqZvNjdsJtFjy\nDvsrjUObAgMBAAECggEAWEGfP8lQJgJyyjLYFyUVgg8wjV009RedkKwQCix2o/p1\ni1tPDG8YfWS6zziIFTu26TZnVd6MYv8TPfkygt50JMoNmR76SmvPQq/xXaO66CCH\nWnL7gbNEzukWll2f4xe3uSclvGsN87In/zNGjGiRLtnnyEWUr5mcU5giL939mw3c\njoqqMOoCtSQp4dZzxBNKpP1StzM3hxX/oVj+UZFV8NEAv5dG8P2vOLSbLi1SR4ip\nQb0HSLVh9I0CNVmWv/Gtd0Kq+Y3mH9zqU7u3VEdSIn7oEm7KpAYdgbE18NubfCDV\nTAEUy2wgXPlT+/FI0OgPqZlVwntnoO+qarPHAy2p+QKBgQDNeVV5QviSNrQ79M0P\nIGA5a+qOeU2gU5fiwpqHMMN+howtCY5GrQttAW98gR5kC6SCvmXv3lapl5u0gyBr\ni1Z2RS802JmnHXlrpmIryT4YI7YNEHuQy1m4UQ47aeVCuBM2NC4GdzC66knY5BO4\nt/ZmCQirAdwPac29YfYrSrLZvwKBgQDJplFORv1aozJqPD2umHubUvnzRd08kr7M\npEvru4GvmJl0hN4GmOg5zb1aAPm91CM57byo/OdyzKZRe1rRJQ1tjp+vJnjIpP9W\nFVKfOnERsEUXZ4utKs0dQrIivs+68MBlZ6ltc2183IyyAs1anGdR7tofsjEEcyQ5\nnyOF/rD1JQKBgFi+K7VYwGTd7Y/rldkPoZ+LRV3NdEJneDT+2aDD5dsynz4gX2uU\n91dYBF+goJCTGrVBKGOmAoXyrdQTwh/QqUIhdVb8qbgsmbFtxf6lRwVD/y+7S7Lo\nsNJTZ7MvdE4RlHKXrL0sI0bHQ6fCMeZYxbmh8zVwcyvRBYPi2GAwPfifAoGAfmLT\nyvALk2d+Db+8GVZRAsU7DBLZ20FOfQzs2M8pNVm7tKAiWJg11STybRr3bNctTP2I\npZH9rqI+DAv4m+VRST1/MFQ4l+lycA3lPw9uFtwYMdcgYGTXMmO/Kq/VmyGSNPyH\n4KXcFcpWFKxU8VneGChQZlVVC6jvJ35q0W0UlFECgYB7VEKzAvp4ACOEYbhEsiCu\nBqgYxOIwg6B3OctpWP6aLOi6+tDHN7FykucryDp2vDKyaMMAhNjYu6jjx80Os9ZI\nlW+jK7BJmr4z+do6wSAm0fHGfOYmn8Dmz+YfL0Lf7M08grZI6jHliq7VZgEfCVFg\n5r6yieGsXAmiEL8sRskNpA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "unittest-collection@hyou-integration-testing.iam.gserviceaccount.com",
+  "client_id": "108723257136251459213",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/unittest-collection%40hyou-integration-testing.iam.gserviceaccount.com"
+}

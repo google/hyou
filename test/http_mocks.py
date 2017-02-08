@@ -30,7 +30,6 @@ import hyou.util
 RECORDS_DIR = os.path.join(os.path.dirname(__file__), 'records')
 
 ENV_RECORD = os.environ.get('HYOU_TEST_RECORD')
-ENV_CREDENTIALS = os.environ.get('HYOU_TEST_CREDENTIALS')
 
 
 def _canonicalize_uri(uri):
@@ -85,12 +84,15 @@ def _make_ok_response():
 
 class ReplayHttp(object):
 
-    def __init__(self):
-        self._real_http = httplib2.Http()
-        if ENV_CREDENTIALS:
-            with py3.open(ENV_CREDENTIALS, 'r') as f:
+    def __init__(self, json_name):
+        if not json_name:
+            self._real_http = None
+        else:
+            json_path = os.path.join(
+                os.path.dirname(__file__), 'creds', json_name)
+            with py3.open(json_path, 'r') as f:
                 credentials = hyou.util.parse_credentials(f.read())
-            self._real_http = credentials.authorize(self._real_http)
+            self._real_http = credentials.authorize(httplib2.Http())
         self._records = _load_records()
 
     def request(self, uri, method='GET', body=None, *args, **kwargs):
@@ -103,21 +105,21 @@ class ReplayHttp(object):
             return (_make_ok_response(), response_body)
 
         if ENV_RECORD != '1':
-            logging.error('Response not available!')
-            logging.error('Requested: %s', sig)
+            logging.info('Response not available!')
+            logging.info('Requested: %s', sig)
             for s in sorted(self._records.keys()):
-                logging.error('Candidate: %s', s)
-            raise Exception(
-                'Response not available; run unit tests with '
-                'HYOU_TEST_RECORD=1.')
+                logging.info('Candidate: %s', s)
+            if self._real_http:
+                logging.info(
+                    'If this test issues new requests, run unit tests with '
+                    'HYOU_TEST_RECORD=1.')
+            raise Exception('Response not available')
 
         response_headers, response_body = self._real_http.request(
             uri, method, body, *args, **kwargs)
         if response_headers.status != 200:
             raise Exception(
-                'Got status=%d; maybe you need to set '
-                'HYOU_TEST_CREDENTIALS?\n%s'
-                % (response_headers.status, response_body))
+                'Got status=%d: %s' % (response_headers.status, response_body))
 
         record = {
             'method': method,

@@ -18,76 +18,79 @@ from __future__ import (
 import unittest
 
 import hyou.client
-from hyou import py3
 
 import http_mocks
 
 
-class CollectionTest(unittest.TestCase):
+class CollectionReadOnlyTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(http_mocks.ReplayHttp(), discovery=False)
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-collection.json'),
+            discovery=False)
 
     def setUp(self):
         self.collection = hyou.client.Collection(self.api)
 
-    def test_discovery(self):
-        pass
-
     def test_accessors_with_constructor(self):
         # Indexing by a key
-        self.collection['1ZYeIFccacgHkL0TPfdgXiMfPCuEEWUtbhXvaB9HBDzQ']
+        self.collection['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8']
+        with self.assertRaises(Exception):
+            self.collection['invalidkey']
 
     def test_accessors_with_enumerator(self):
         # iter()
-        it = iter(self.collection)
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', py3.next(it))
-        self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', py3.next(it))
-        self.assertRaises(StopIteration, py3.next, it)
+            ['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+             '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A'],
+            sorted(list(self.collection)))
         # len()
         self.assertEqual(2, len(self.collection))
         # keys()
         self.assertEqual(
-            ['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
-             '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc'],
-            self.collection.keys())
+            ['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+             '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A'],
+            sorted(self.collection.keys()))
         # values()
-        values = self.collection.values()
-        self.assertEqual(2, len(values))
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', values[0].key)
-        self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', values[1].key)
+            ['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+             '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A'],
+            sorted(value.key for value in self.collection.values()))
         # items()
-        items = self.collection.items()
-        self.assertEqual(2, len(items))
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', items[0][0])
-        self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM', items[0][1].key)
-        self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', items[1][0])
-        self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc', items[1][1].key)
+            ['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+             '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A'],
+            sorted(key for key, value in self.collection.items()
+                   if key == value.key))
         # Indexing by an integer
+        value0 = self.collection[0]
+        value1 = self.collection[1]
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
-            self.collection[0].key)
-        self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc',
-            self.collection[1].key)
+            ['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+             '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A'],
+            sorted([value0.key, value1.key]))
         # Indexing by a key
         self.assertEqual(
-            '1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM',
-            self.collection['1Lm8oYdqQWV0nweNql4S_g_iUhpVxJHXw0lwn5rsU2zM']
+            '1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8',
+            self.collection['1XnzxrgkO9epX3ZwRygiUb3pE9vb2DbtCkLUxGQjTAl8']
             .key)
         self.assertEqual(
-            '1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc',
-            self.collection['1OB50n5vs3ZaLKgQ_BHkD7AGkNDMICo3jPXPQ8Y1_ekc']
+            '1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A',
+            self.collection['1wUUo2_8N3BqlSP301IzaeQQmCAuPm48E537g0w8h00A']
             .key)
 
+
+class CollectionReadWriteTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.api = hyou.client.API(
+            http_mocks.ReplayHttp('unittest-collection-write.json'),
+            discovery=False)
+
+    def setUp(self):
+        self.collection = hyou.client.Collection(self.api)
+
     def test_create_spreadsheet(self):
-        self.collection.create_spreadsheet('Cinnamon', rows=2, cols=8)
+        self.collection.create_spreadsheet('Test', rows=10, cols=10)
