@@ -31,7 +31,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
         self._updated = None
 
     def __repr__(self):
-        return str('Spreadsheet(key=%r)' % self.key)
+        return str('Spreadsheet(key=%r)') % (self.key,)
 
     def refresh(self, entry=None):
         if entry is not None:

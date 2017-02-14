@@ -112,7 +112,7 @@ class WorksheetView(util.CustomMutableFixedList):
         return iter(self._view_rows)
 
     def __repr__(self):
-        return str('WorksheetView(%r)' % (self._view_rows,))
+        return str('WorksheetView(%r)') % (self._view_rows,)
 
     def __enter__(self):
         return self
@@ -230,7 +230,7 @@ class Worksheet(WorksheetView):
         super(Worksheet, self).__init__(self, api, 0, self.rows, 0, self.cols)
 
     def __repr__(self):
-        return str('Worksheet(%r)' % (self._view_rows,))
+        return str('Worksheet(%r)') % (self._view_rows,)
 
     def refresh(self, entry=None):
         if entry is not None:
