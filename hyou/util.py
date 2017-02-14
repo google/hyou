@@ -231,25 +231,25 @@ class CustomMutableFixedList(object):
             self[i] = new_value
 
     def __delitem__(self, key):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')
 
     def append(self, x):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')
 
     def extend(self, x):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')
 
     def insert(self, i, x):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')
 
     def pop(self, i=None):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')
 
     def remove(self, x):
-        raise NotImplementedError(
+        raise RuntimeError(
             'Methods changing the list size are unavailable')

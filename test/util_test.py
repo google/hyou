@@ -253,9 +253,9 @@ class CustomMutableFixedListTest(unittest.TestCase):
         self.assertEqual('cinamon', self.list[3])
 
     def test_unsupported(self):
-        self.assertRaises(NotImplementedError, self.list.__delitem__, 0)
-        self.assertRaises(NotImplementedError, self.list.append, 'lemon')
-        self.assertRaises(NotImplementedError, self.list.extend, ['lemon'])
-        self.assertRaises(NotImplementedError, self.list.insert, 0, 'lemon')
-        self.assertRaises(NotImplementedError, self.list.pop)
-        self.assertRaises(NotImplementedError, self.list.remove, 'apple')
+        self.assertRaises(RuntimeError, self.list.__delitem__, 0)
+        self.assertRaises(RuntimeError, self.list.append, 'lemon')
+        self.assertRaises(RuntimeError, self.list.extend, ['lemon'])
+        self.assertRaises(RuntimeError, self.list.insert, 0, 'lemon')
+        self.assertRaises(RuntimeError, self.list.pop)
+        self.assertRaises(RuntimeError, self.list.remove, 'apple')
