@@ -17,6 +17,7 @@ from __future__ import (
 
 import six
 
+from . import exception
 from . import py3
 from . import util
 
@@ -168,7 +169,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         else:
             col = self._start_col + index
         if not (self._start_col <= col < self._end_col):
-            raise IndexError()
+            raise IndexError('Column %d is out of range.' % col)
         if (self._row, col) not in self._view._input_value_map:
             self._view._ensure_cells_fetched()
         return self._view._input_value_map.get((self._row, col), '')
@@ -192,7 +193,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
         else:
             col = self._start_col + index
         if not (self._start_col <= col < self._end_col):
-            raise IndexError()
+            raise IndexError('Column %d is out of range.' % col)
         if new_value is None:
             new_value = ''
         elif isinstance(new_value, six.integer_types):
@@ -241,7 +242,7 @@ class Worksheet(WorksheetView):
                     self._entry = entry
                     break
             else:
-                raise KeyError('Sheet has been removed')
+                raise exception.HyouRuntimeError('The sheet has been removed.')
         self._reset_size(0, self.rows, 0, self.cols)
         super(Worksheet, self).refresh()
 
@@ -255,9 +256,13 @@ class Worksheet(WorksheetView):
         if end_col is None:
             end_col = self.cols
         if not (0 <= start_row <= end_row <= self.rows):
-            raise IndexError()
+            raise IndexError(
+                'Row range [%d, %d) is out of range.'
+                % (start_row, end_row))
         if not (0 <= start_col <= end_col <= self.cols):
-            raise IndexError()
+            raise IndexError(
+                'Column range [%d, %d) is out of range.'
+                % (start_col, end_col))
         return WorksheetView(
             self, self._api,
             start_row=start_row, end_row=end_row,
@@ -323,4 +328,4 @@ class Worksheet(WorksheetView):
         for entry in spreadsheet_entry['sheets']:
             if entry['properties']['sheetId'] == self.key:
                 return entry
-        raise KeyError('Sheet has been removed')
+        raise exception.HyouRuntimeError('The sheet has been removed.')
