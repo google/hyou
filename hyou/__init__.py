@@ -15,11 +15,11 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
-from .collection import Collection  # noqa: F401
-from .spreadsheet import Spreadsheet  # noqa: F401
-from .util import SCOPES  # noqa: F401
-from .worksheet import Worksheet  # noqa: F401
-from .worksheet import WorksheetView  # noqa: F401
+from .collection import Collection
+from .spreadsheet import Spreadsheet
+from .util import SCOPES
+from .worksheet import Worksheet
+from .worksheet import WorksheetView
 
 login = Collection.login
 

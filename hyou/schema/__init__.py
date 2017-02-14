@@ -15,5 +15,10 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
-from .sheets_v4 import SCHEMA as SHEETS_V4  # noqa: F401
-from .drive_v2 import SCHEMA as DRIVE_V2  # noqa: F401
+from .sheets_v4 import SCHEMA as SHEETS_V4
+from .drive_v2 import SCHEMA as DRIVE_V2
+
+__all__ = [
+    'DRIVE_V2',
+    'SHEETS_V4',
+]
