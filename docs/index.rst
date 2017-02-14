@@ -152,7 +152,7 @@ A :py:class:`Worksheet` object can be accessed just like two-dimensional string 
     for i, row in enumerate(worksheet):
         print i, row[0], '/'.join(row[1:])
 
-A cell value is a bare input string, represented as a :py:class:`str` (or an :py:class:`unicode` if it contains non-ASCII characters).
+A cell value is a bare input string, represented as a unicode string (:py:class:`str` in Python 3, :py:class:`unicode` in Python 2).
 
 - Numbers are converted to strings.
 - Formulas (e.g. `"=SUM(A2:A)"`) are never expanded, and returned as-is.
@@ -164,7 +164,7 @@ If you attempt to write a non-string value (e.g. numbers) to a cell, it is autom
 .. code:: python
 
     worksheet[0][0] = 7
-    print type(worksheet[0][0])  # => str
+    print type(worksheet[0][0])  # => str in Python 3, unicode in Python 2
 
 Writes to cells are never committed until :py:meth:`Worksheet.commit` is called. You can use *with statements* to make sure :py:meth:`Worksheet.commit` is called:
 
@@ -246,7 +246,7 @@ API Reference
 
       Creates a new spreadsheet, and returns a :py:class:`Spreadsheet` instance.
 
-      :param str/unicode title: The title of a new spreadsheet.
+      :param str title: The title of a new spreadsheet.
       :param int rows: The number of rows of a new spreadsheet.
       :param int cols: The number of cols of a new spreadsheet.
 
@@ -297,7 +297,7 @@ API Reference
 
       Adds a new worksheet and returns a new :py:class:`Worksheet` object.
 
-      :param str/unicode title: The title of a new worksheet.
+      :param str title: The title of a new worksheet.
       :param int rows: The number of rows of a new worksheet.
       :param int cols: The number of cols of a new worksheet.
 
@@ -307,7 +307,7 @@ API Reference
 
       Deletes a worksheet.
 
-      :param str/unicode title: The title of the worksheet to be deleted.
+      :param str title: The title of the worksheet to be deleted.
 
       Deletion of a worksheet is committed immediately and :py:meth:`refresh` is automatically called to reflect changes.
 
@@ -412,6 +412,7 @@ Changelog
 - Added Python 3.3+ support.
 - Dropped Python 2.6 support.
 - Switched to Sheets API v4.
+- Now cell values are always represented as a unicode string even in Python 2.
 
 2.1.1 (2016-07-04)
 
