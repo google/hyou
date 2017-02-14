@@ -247,26 +247,12 @@ class Worksheet(WorksheetView):
         super(Worksheet, self).refresh()
 
     def view(self, start_row=None, end_row=None, start_col=None, end_col=None):
-        if start_row is None:
-            start_row = 0
-        if end_row is None:
-            end_row = self.rows
-        if start_col is None:
-            start_col = 0
-        if end_col is None:
-            end_col = self.cols
-        if end_row < start_row:
-            end_row = start_row
-        if end_col < start_col:
-            end_col = start_col
-        if not (0 <= start_row <= end_row <= self.rows):
-            raise IndexError(
-                'Row range [%d, %d) is out of range.'
-                % (start_row, end_row))
-        if not (0 <= start_col <= end_col <= self.cols):
-            raise IndexError(
-                'Column range [%d, %d) is out of range.'
-                % (start_col, end_col))
+        start_row, end_row, _ = slice(start_row, end_row).indices(self.rows)
+        start_col, end_col, _ = slice(start_col, end_col).indices(self.cols)
+        if start_row > end_row:
+            start_row = end_row
+        if start_col > end_col:
+            start_col = end_col
         return WorksheetView(
             self, self._api,
             start_row=start_row, end_row=end_row,

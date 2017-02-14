@@ -154,18 +154,12 @@ class WorksheetReadOnlyTest(unittest.TestCase):
         self.assertEqual(2, view.rows)
         self.assertEqual(5, view.cols)
 
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(start_row=3)
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(end_row=-1)
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(start_row=1, end_row=0)
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(start_col=6)
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(end_col=-1)
-        with self.assertRaises(IndexError):
-            self.worksheet1.view(start_col=1, end_col=0)
+        self.worksheet1.view(start_row=3)
+        self.worksheet1.view(end_row=-1)
+        self.worksheet1.view(start_row=1, end_row=0)
+        self.worksheet1.view(start_col=6)
+        self.worksheet1.view(end_col=-1)
+        self.worksheet1.view(start_col=1, end_col=0)
 
         view = self.worksheet1.view(end_row=1, start_col=2)
         self.assertEqual(0, view.start_row)
