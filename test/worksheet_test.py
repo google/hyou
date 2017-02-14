@@ -141,9 +141,15 @@ class WorksheetReadOnlyTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(
-            repr([['honoka', 'eri', 'kotori', 'umi', 'rin'],
-                  ['maki', 'nozomi', 'hanayo', 'niko', '']]),
+            str('Worksheet(%r)' %
+                [['honoka', 'eri', 'kotori', 'umi', 'rin'],
+                 ['maki', 'nozomi', 'hanayo', 'niko', '']]),
             repr(self.worksheet1))
+        self.assertEqual(
+            str('WorksheetView(%r)' %
+                [['honoka', 'eri', 'kotori', 'umi', 'rin'],
+                 ['maki', 'nozomi', 'hanayo', 'niko', '']]),
+            repr(self.worksheet1.view()))
 
     def test_view(self):
         view = self.worksheet1.view()
