@@ -219,7 +219,7 @@ class WorksheetViewRow(util.CustomMutableFixedList):
             yield self._view._input_value_map.get((self._row, col), '')
 
     def __repr__(self):
-        return repr([self[i] for i in py3.range(len(self))])
+        return repr(list(self))
 
 
 class Worksheet(WorksheetView):

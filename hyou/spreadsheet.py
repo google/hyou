@@ -17,7 +17,6 @@ from __future__ import (
 
 import datetime
 
-from . import py3
 from . import util
 from . import worksheet
 
@@ -27,13 +26,12 @@ class Spreadsheet(util.LazyOrderedDictionary):
     def __init__(self, api, key, entry):
         super(Spreadsheet, self).__init__(self._worksheet_enumerator, None)
         self._api = api
-        self._key = key
+        self._key = str(key)
         self._entry = entry
         self._updated = None
 
     def __repr__(self):
-        return py3.str_to_native_str(
-            '%s(key="%s")' % (self.__class__.__name__, self.key))
+        return str('Spreadsheet(key=%r)' % self.key)
 
     def refresh(self, entry=None):
         if entry is not None:

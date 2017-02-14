@@ -40,7 +40,7 @@ class SpreadsheetReadOnlyTest(unittest.TestCase):
     def test_repr(self):
         self.assertEqual(
             str('Spreadsheet('
-                'key="1EQKX_l9GS2HSAMqQd_IrLjy5M0IFq1SbO3uUKVlfHjU")'),
+                'key=\'1EQKX_l9GS2HSAMqQd_IrLjy5M0IFq1SbO3uUKVlfHjU\')'),
             repr(self.spreadsheet))
 
     def test_worksheet_accessors(self):
