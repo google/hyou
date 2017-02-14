@@ -109,8 +109,7 @@ class WorksheetView(util.CustomMutableFixedList):
         return self.rows
 
     def __iter__(self):
-        for row in self._view_rows:
-            yield row
+        return iter(self._view_rows)
 
     def __repr__(self):
         return repr(self._view_rows)
