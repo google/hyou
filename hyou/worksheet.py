@@ -289,6 +289,23 @@ class Worksheet(WorksheetView):
             })
         self.refresh(new_entry)
 
+    def set_frozen_size(self, rows, cols):
+        assert isinstance(rows, six.integer_types) and rows >= 0
+        assert isinstance(cols, six.integer_types) and cols >= 0
+        new_entry = self._make_single_batch_request(
+            'updateSheetProperties',
+            {
+                'properties': {
+                    'sheetId': self.key,
+                    'gridProperties': {
+                        'frozenRowCount': rows,
+                        'frozenColumnCount': cols,
+                    },
+                },
+                'fields': 'gridProperties(frozenRowCount,frozenColumnCount)',
+            })
+        self.refresh(new_entry)
+
     @property
     def key(self):
         return self._entry['properties']['sheetId']
@@ -325,6 +342,26 @@ class Worksheet(WorksheetView):
     @cols.setter
     def cols(self, cols):
         self.set_size(self.rows, cols)
+
+    @property
+    def frozen_rows(self):
+        return (
+            self._entry['properties']['gridProperties']
+            .get('frozenRowCount', 0))
+
+    @frozen_rows.setter
+    def frozen_rows(self, rows):
+        self.set_frozen_size(rows, self.frozen_cols)
+
+    @property
+    def frozen_cols(self):
+        return (
+            self._entry['properties']['gridProperties']
+            .get('frozenColumnCount', 0))
+
+    @frozen_cols.setter
+    def frozen_cols(self, cols):
+        self.set_frozen_size(self.frozen_rows, cols)
 
     def _make_single_batch_request(self, method, params):
         spreadsheet_entry = self._spreadsheet._make_single_batch_request(
