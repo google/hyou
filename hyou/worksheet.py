@@ -255,6 +255,10 @@ class Worksheet(WorksheetView):
             start_col = 0
         if end_col is None:
             end_col = self.cols
+        if end_row < start_row:
+            end_row = start_row
+        if end_col < start_col:
+            end_col = start_col
         if not (0 <= start_row <= end_row <= self.rows):
             raise IndexError(
                 'Row range [%d, %d) is out of range.'
