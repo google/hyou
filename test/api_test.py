@@ -17,7 +17,7 @@ from __future__ import (
 
 import unittest
 
-import hyou.client
+import hyou.api
 
 import http_mocks
 
@@ -25,11 +25,11 @@ import http_mocks
 class APITest(unittest.TestCase):
 
     def test_no_discovery(self):
-        hyou.client.API(
+        hyou.api.API(
             http_mocks.ReplayHttp(None),
             discovery=False)
 
     def test_discovery(self):
-        hyou.client.API(
+        hyou.api.API(
             http_mocks.ReplayHttp('unittest-collection.json'),
             discovery=True)

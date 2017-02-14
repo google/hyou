@@ -17,7 +17,8 @@ from __future__ import (
 
 import unittest
 
-import hyou.client
+import hyou.api
+import hyou.collection
 
 import http_mocks
 
@@ -26,12 +27,12 @@ class CollectionReadOnlyTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(
+        cls.api = hyou.api.API(
             http_mocks.ReplayHttp('unittest-collection.json'),
             discovery=False)
 
     def setUp(self):
-        self.collection = hyou.client.Collection(self.api)
+        self.collection = hyou.collection.Collection(self.api)
 
     def test_accessors_with_constructor(self):
         # Indexing by a key
@@ -85,12 +86,12 @@ class CollectionReadWriteTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(
+        cls.api = hyou.api.API(
             http_mocks.ReplayHttp('unittest-collection-write.json'),
             discovery=False)
 
     def setUp(self):
-        self.collection = hyou.client.Collection(self.api)
+        self.collection = hyou.collection.Collection(self.api)
 
     def test_create_spreadsheet(self):
         self.collection.create_spreadsheet('Test', rows=10, cols=10)

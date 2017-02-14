@@ -17,7 +17,8 @@ from __future__ import (
 
 import unittest
 
-import hyou.client
+import hyou.api
+import hyou.collection
 from hyou import py3
 import hyou.util
 
@@ -34,12 +35,12 @@ class WorksheetReadOnlyTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(
+        cls.api = hyou.api.API(
             http_mocks.ReplayHttp('unittest-sheets.json'),
             discovery=False)
 
     def setUp(self):
-        self.collection = hyou.client.Collection(self.api)
+        self.collection = hyou.collection.Collection(self.api)
         self.spreadsheet = self.collection[
             '18OLN5A2SSKAeYLXw4SnZxU1yRJnMdf_ZCjc0D2UdhX8']
         self.worksheet1 = self.spreadsheet['Sheet1']
@@ -191,12 +192,12 @@ class WorksheetReadWriteTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api = hyou.client.API(
+        cls.api = hyou.api.API(
             http_mocks.ReplayHttp('unittest-sheets.json'),
             discovery=False)
 
     def setUp(self):
-        self.collection = hyou.client.Collection(self.api)
+        self.collection = hyou.collection.Collection(self.api)
         self.spreadsheet = self.collection[
             '1z5eYrVoLP-RUWdzeqUShRc2VPFX0SUCTlHMmUS0K8Lo']
         self.worksheet1 = self.spreadsheet['Sheet1']
