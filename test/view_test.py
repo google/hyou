@@ -202,10 +202,6 @@ class WorksheetReadWriteTest(unittest.TestCase):
         self.view[1][4] = None
         self.view.commit()
 
-    def test_write_with(self):
-        with self.view:
-            self.view[1][3] = 'nico'
-
     def test_refresh(self):
         self.assertEqual('honoka', self.view[0][0])
 

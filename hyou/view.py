@@ -110,12 +110,6 @@ class View(util.CustomMutableFixedList):
     def __repr__(self):
         return str('View(%r)') % (self._view_rows,)
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.commit()
-
     @property
     def rows(self):
         return self._end_row - self._start_row
