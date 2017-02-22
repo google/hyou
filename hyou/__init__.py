@@ -18,8 +18,8 @@ from __future__ import (
 from .collection import Collection
 from .spreadsheet import Spreadsheet
 from .util import SCOPES
+from .view import View
 from .worksheet import Worksheet
-from .worksheet import WorksheetView
 
 login = Collection.login
 
@@ -29,7 +29,7 @@ __all__ = [
     'Collection',
     'SCOPES',
     'Spreadsheet',
+    'View',
     'Worksheet',
-    'WorksheetView',
     'login',
 ]
