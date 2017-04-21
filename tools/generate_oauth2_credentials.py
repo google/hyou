@@ -17,7 +17,10 @@
 """Performs OAuth2 Web Server Flow to obtain credentials.
 
 Usage:
-generate_oauth2_credentials.py [--client_id=CLIENT_ID --client_secret=CLIENT_SECRET] OUTPUT_JSON_PATH
+generate_oauth2_credentials.py
+    [--client_id=CLIENT_ID]
+    [--client_secret=CLIENT_SECRET]
+    OUTPUT_JSON_PATH
 """
 
 import os
@@ -29,7 +32,8 @@ import oauth2client.client
 
 FLAGS = gflags.FLAGS
 
-TEST_CLIENT_ID = '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com'
+TEST_CLIENT_ID = (
+    '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com')
 TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 
 gflags.DEFINE_string('client_id', TEST_CLIENT_ID, '')
@@ -66,7 +70,8 @@ def main(argv):
     print
     print 'Credentials successfully saved to %s' % output_json_path
     print
-    print 'WARNING: Keep it in a safe location! With the credentials, all your Google Drive documents can be accessed.'
+    print ('WARNING: Keep it in a safe location! With the credentials, '
+           'all your Google Drive documents can be accessed.')
 
 
 if __name__ == '__main__':

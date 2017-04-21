@@ -31,7 +31,8 @@ import hyou.client
 import oauth2client.client
 
 CREDENTIAL_PATH = os.path.join(os.environ['HOME'], '.hyou.credential.json')
-TEST_CLIENT_ID = '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com'
+TEST_CLIENT_ID = (
+    '958069810280-th697if59r9scrf1qh0sg6gd9d9u0kts.apps.googleusercontent.com')
 TEST_CLIENT_SECRET = '5nlcvd54WycOd8h8w7HD0avT'
 
 FLAGS = gflags.FLAGS

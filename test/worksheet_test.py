@@ -81,7 +81,7 @@ class WorksheetTest(unittest.TestCase):
                     query.max_row == 2 and
                     query.min_col == 1 and
                     query.max_col == 5 and
-                    query.return_empty == False)
+                    not query.return_empty)
         ).AndReturn(
             FakeCellsFeed([
                 ('1', '1', 'honoka'),
@@ -272,7 +272,8 @@ class WorksheetTest(unittest.TestCase):
         self.worksheet[0][1] = 28.3
         self.worksheet[0][2] = 'kotori-chan'
         self.assertRaises(
-            UnicodeDecodeError, self.worksheet[0].__setitem__, 3, '\xe6\xb5\xb7')
+            UnicodeDecodeError, self.worksheet[0].__setitem__, 3,
+            '\xe6\xb5\xb7')
         self.worksheet[0][4] = nya
         self.assertRaises(IndexError, self.worksheet[
                           0].__setitem__, 5, '(*8*)')
@@ -297,7 +298,8 @@ class WorksheetTest(unittest.TestCase):
         self.assertFalse(self.worksheet[0:0])
         self.assertFalse(self.worksheet[0][0:0])
         self.assertFalse(
-            self.worksheet.view(start_row=0, end_row=0, start_col=0, end_col=0))
+            self.worksheet.view(
+                start_row=0, end_row=0, start_col=0, end_col=0))
 
     def test_refresh(self):
         self.set_read_expectations()
@@ -312,7 +314,7 @@ class WorksheetTest(unittest.TestCase):
                     query.max_row == 2 and
                     query.min_col == 1 and
                     query.max_col == 2 and
-                    query.return_empty == False)
+                    not query.return_empty)
         ).AndReturn(
             FakeCellsFeed([
                 ('1', '1', 'C++'), ('1', '2', 'Java'), ('2', '1', 'Python')]))
@@ -439,7 +441,7 @@ class WorksheetTest(unittest.TestCase):
                     query.max_row == 1 and
                     query.min_col == 3 and
                     query.max_col == 5 and
-                    query.return_empty == False)
+                    not query.return_empty)
         ).AndReturn(
             FakeCellsFeed([
                 ('1', '3', 'kotori'), ('1', '4', 'umi'), ('1', '5', 'rin')]))

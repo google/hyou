@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import collections
 import datetime
 import itertools
 import json
@@ -141,7 +140,7 @@ class Spreadsheet(util.LazyOrderedDictionary):
     @title.setter
     def title(self, new_title):
         body = {'title': new_title}
-        response = self.drive.files().update(fileId=self.key, body=body).execute()
+        self.drive.files().update(fileId=self.key, body=body).execute()
         self.refresh()
 
     @property
@@ -159,7 +158,8 @@ class Spreadsheet(util.LazyOrderedDictionary):
 
 class WorksheetView(object):
 
-    def __init__(self, worksheet, client, start_row, end_row, start_col, end_col):
+    def __init__(
+            self, worksheet, client, start_row, end_row, start_col, end_col):
         self.worksheet = worksheet
         self.client = client
         self._reset_size(start_row, end_row, start_col, end_col)
@@ -282,7 +282,8 @@ class WorksheetViewRow(util.CustomMutableFixedList):
                 raise ValueError(
                     'Tried to assign %d values to %d element slice' %
                     (len(new_value), stop - start))
-            for i, new_value_one in itertools.izip(xrange(start, stop), new_value):
+            for i, new_value_one in itertools.izip(
+                    xrange(start, stop), new_value):
                 self[i] = new_value_one
             return
         assert isinstance(index, int)
@@ -392,5 +393,5 @@ class Worksheet(WorksheetView):
         url = gdata.spreadsheets.client.WORKSHEET_URL % (
             self.spreadsheet.key, self.key)
         # TODO: Use returned entry to speed up
-        unused_entry = self.client.update(self._entry, uri=url, force=True)
+        self.client.update(self._entry, uri=url, force=True)
         self.refresh()
