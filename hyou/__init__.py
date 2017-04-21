@@ -19,6 +19,8 @@ from .client import WorksheetView
 
 login = Collection.login
 
+__version__ = '2.1.2'
+
 __all__ = [
     'Collection',
     'Spreadsheet',
