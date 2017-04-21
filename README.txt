@@ -38,7 +38,7 @@ Synopsis
 Documentation
 -------------
 
-Documentation is available at https://hyou.readthedocs.io/.
+Documentation is available at https://hyou.readthedocs.io/en/v2/.
 
 Author
 ------
