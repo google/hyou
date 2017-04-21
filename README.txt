@@ -6,6 +6,9 @@ Spreadsheet data.
 
 |PyPI version| |Build Status| |Coverage Status|
 
+**This is the development branch for v3**. Please see `v2
+branch <https://github.com/google/hyou/tree/v2>`__ for 2.x releases.
+
 Synopsis
 --------
 
@@ -38,7 +41,7 @@ Synopsis
 Documentation
 -------------
 
-Documentation is available at https://hyou.readthedocs.io/.
+Documentation is available at https://hyou.readthedocs.io/en/latest/.
 
 Author
 ------

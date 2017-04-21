@@ -8,6 +8,9 @@ Google Spreadsheet data.
 [![Build Status](https://travis-ci.org/google/hyou.svg)](https://travis-ci.org/google/hyou)
 [![Coverage Status](https://coveralls.io/repos/google/hyou/badge.svg?branch=master&service=github)](https://coveralls.io/github/google/hyou?branch=master)
 
+**This is the development branch for v3**.
+Please see [v2 branch](https://github.com/google/hyou/tree/v2) for 2.x releases.
+
 
 Synopsis
 --------
@@ -41,7 +44,7 @@ worksheet.commit()
 Documentation
 -------------
 
-Documentation is available at https://hyou.readthedocs.io/.
+Documentation is available at https://hyou.readthedocs.io/en/latest/.
 
 
 Author
