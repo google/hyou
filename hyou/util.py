@@ -20,6 +20,7 @@ import json
 import oauth2client.client
 import oauth2client.service_account
 import six
+import string
 
 from . import py3
 
@@ -31,15 +32,11 @@ SCOPES = (
 
 
 def format_column_address(index_column):
-    k = index_column
-    p = 1
-    while k >= 26 ** p:
-        k -= 26 ** p
-        p += 1
-    s = ''
-    for i in py3.range(p):
-        s = py3.chr(py3.ord('A') + k % 26) + s
-    return s
+    letters = []
+    while index_column >= 0:
+        letters.append(string.ascii_uppercase[index_column % 26])
+        index_column = index_column // 26 - 1
+    return ''.join(reversed(letters))
 
 
 def format_range_a1_notation(
