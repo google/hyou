@@ -9,4 +9,4 @@ script:
 after_success: coveralls
 branches:
   except:
-    - /^v[0-9]/
+    - /^v[0-9]\./
