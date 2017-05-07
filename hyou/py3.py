@@ -53,13 +53,21 @@ else:
     zip = builtins.zip
 
 
-def str_to_native_str(s):
+def str_to_native_str(s, encoding):
+    """Converts a unicode string to a native string."""
+    if not isinstance(s, str):
+        raise TypeError(
+            'Expected %s, got %s' % (str.__name__, type(s).__name__))
     if six.PY2:
-        return s.encode('utf-8')
+        return s.encode(encoding)
     return s
 
 
-def native_str_to_bytes(s):
+def native_str_to_bytes(s, encoding):
+    """Converts a native string to a byte string."""
+    if not isinstance(s, builtins.str):
+        raise TypeError(
+            'Expected %s, got %s' % (builtins.str.__name__, type(s).__name__))
     if six.PY2:
         return s
-    return s.encode('utf-8')
+    return s.encode(encoding)

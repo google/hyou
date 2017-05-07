@@ -50,7 +50,7 @@ class View(util.CustomMutableFixedList):
             self._start_col, self._end_col)
         response = self._api.sheets.spreadsheets().values().get(
             spreadsheetId=self._worksheet._spreadsheet.key,
-            range=py3.str_to_native_str(range_str),
+            range=py3.str_to_native_str(range_str, encoding='utf-8'),
             majorDimension='ROWS',
             valueRenderOption='FORMATTED_VALUE',
             dateTimeRenderOption='FORMATTED_STRING').execute()
@@ -89,7 +89,8 @@ class View(util.CustomMutableFixedList):
     def __setitem__(self, index, new_value):
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self))
-            assert step == 1, 'slicing with step is not supported'
+            if step != 1:
+                raise NotImplementedError('slicing with step is not supported')
             if stop < start:
                 stop = start
             if len(new_value) != stop - start:
@@ -146,13 +147,14 @@ class ViewRow(util.CustomMutableFixedList):
     def __getitem__(self, index):
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self))
-            assert step == 1, 'slicing with step is not supported'
+            if step != 1:
+                raise NotImplementedError('slicing with step is not supported')
             if stop < start:
                 stop = start
             return ViewRow(
                 self._view, self._row,
                 self._start_col + start, self._start_col + stop)
-        assert isinstance(index, six.integer_types)
+        util.check_type(index, six.integer_types)
         if index < 0:
             col = self._end_col + index
         else:
@@ -166,7 +168,8 @@ class ViewRow(util.CustomMutableFixedList):
     def __setitem__(self, index, new_value):
         if isinstance(index, slice):
             start, stop, step = index.indices(len(self))
-            assert step == 1, 'slicing with step is not supported'
+            if step != 1:
+                raise NotImplementedError('slicing with step is not supported')
             if stop < start:
                 stop = start
             if len(new_value) != stop - start:
@@ -176,7 +179,7 @@ class ViewRow(util.CustomMutableFixedList):
             for i, new_value_one in py3.zip(py3.range(start, stop), new_value):
                 self[i] = new_value_one
             return
-        assert isinstance(index, six.integer_types)
+        util.check_type(index, six.integer_types)
         if index < 0:
             col = self._end_col + index
         else:

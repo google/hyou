@@ -28,7 +28,7 @@ import http_mocks
 class Dummy(object):
 
     def __str__(self):
-        return py3.str_to_native_str('<dummy>')
+        return py3.str_to_native_str('<dummy>', encoding='ascii')
 
 
 class WorksheetReadOnlyTest(unittest.TestCase):

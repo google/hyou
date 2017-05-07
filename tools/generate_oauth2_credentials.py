@@ -68,7 +68,8 @@ def main(argv):
 
     with py3.open(opts.output_json_path, 'wb') as f:
         os.fchmod(f.fileno(), 0o600)
-        f.write(py3.native_str_to_bytes(credentials.to_json()))
+        f.write(
+            py3.native_str_to_bytes(credentials.to_json(), encoding='utf-8'))
 
     print()
     print('Credentials successfully saved to %s' % opts.output_json_path)

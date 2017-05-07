@@ -31,6 +31,13 @@ SCOPES = (
 )
 
 
+def check_type(value, expected_type):
+    if not isinstance(value, expected_type):
+        raise TypeError(
+            'Expected %s, got %s' % (
+                expected_type.__name__, type(value).__name__))
+
+
 def format_column_address(index_column):
     letters = []
     while index_column >= 0:

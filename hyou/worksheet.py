@@ -18,6 +18,7 @@ from __future__ import (
 import six
 
 from . import exception
+from . import util
 from . import view
 
 
@@ -58,8 +59,10 @@ class Worksheet(object):
             start_col=start_col, end_col=end_col)
 
     def set_size(self, rows, cols):
-        assert isinstance(rows, six.integer_types) and rows > 0
-        assert isinstance(cols, six.integer_types) and cols > 0
+        util.check_type(rows, six.integer_types)
+        util.check_type(cols, six.integer_types)
+        if not (rows >= 0 and cols >= 0):
+            raise ValueError('Non-positive size is not allowed')
         new_entry = self._make_single_batch_request(
             'updateSheetProperties',
             {
@@ -75,8 +78,10 @@ class Worksheet(object):
         self.refresh(new_entry)
 
     def set_frozen_size(self, rows, cols):
-        assert isinstance(rows, six.integer_types) and rows >= 0
-        assert isinstance(cols, six.integer_types) and cols >= 0
+        util.check_type(rows, six.integer_types)
+        util.check_type(cols, six.integer_types)
+        if not (rows >= 0 and cols >= 0):
+            raise ValueError('Non-positive size is not allowed')
         new_entry = self._make_single_batch_request(
             'updateSheetProperties',
             {
