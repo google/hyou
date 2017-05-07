@@ -1,11 +1,16 @@
 Changelog
 ---------
 
-3.0.0 (2017-02-XX)
+3.0.0 (2017-MM-DD)
 
 - Added Python 3.3+ support.
-- Dropped Python 2.6 support.
 - Switched to Sheets API v4.
+
+2.1.2 (2017-04-21)
+
+- Dropped Python 2.6 support.
+- Disallow oauth2client 4.x to avoid warnings.
+- Follow PEP8 coding style.
 
 2.1.1 (2016-07-04)
 
