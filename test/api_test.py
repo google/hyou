@@ -15,11 +15,24 @@
 from __future__ import (
     absolute_import, division, print_function, unicode_literals)
 
+import contextlib
+import logging
 import unittest
 
 import hyou.api
 
 import http_mocks
+
+
+@contextlib.contextmanager
+def suppress_oauth2client_warnings():
+    """Suppresses warnings from oauth2client 4+."""
+    logger = logging.getLogger('googleapiclient.discovery_cache')
+    logger.setLevel(logging.ERROR)
+    try:
+        yield
+    finally:
+        logger.setLevel(logging.NOTSET)
 
 
 class APITest(unittest.TestCase):
@@ -30,6 +43,7 @@ class APITest(unittest.TestCase):
             discovery=False)
 
     def test_discovery(self):
-        hyou.api.API(
-            http_mocks.ReplayHttp('unittest-collection.json'),
-            discovery=True)
+        with suppress_oauth2client_warnings():
+            hyou.api.API(
+                http_mocks.ReplayHttp('unittest-collection.json'),
+                discovery=True)
